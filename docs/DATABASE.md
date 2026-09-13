@@ -37,10 +37,23 @@ villkorade UPDATE-satser.
 
 | Operation | Kolumner | Legacy-motsvarighet |
 |---|---|---|
-| Skicka rapport | `is_pending = 1` (villkor `machid=? AND is_pending<2`) | `AdminDB::pending_reservation()` |
-| Justera timmar | `starttime, endtime, modified, is_pending=1, old_hours` (samma villkor) | `ResDB` UPDATE :333 |
+| Skicka rapport | `is_pending = 1` (villkor `machid=? AND is_pending=0`) | `AdminDB::pending_reservation()` |
+| Justera timmar | `starttime, endtime, modified, old_hours` (villkor `machid=? AND is_pending=0`; raden förblir utkast) | `ResDB` UPDATE :333 |
 
-Rader med `is_pending = 2` (godkända) röres aldrig. Inga DELETE.
+**Låsningsregel (skärpt 2026-09-14, avviker från legacy):**
+
+```
+Utkast (0) kan redigeras och skickas.
+Inskickat (1) är låst och kan inte skickas igen.
+Godkänt (2) är låst och kan inte skickas igen.
+```
+
+Endast rader med `is_pending = 0` kan någonsin uppdateras av appen —
+villkoret i UPDATE-satsen är den slutliga spärren (atomär per sats på
+MyISAM), och submitten kräver att radräkningen exakt matchar antalet
+förväntade utkastrader innan rapportmailet skapas (exakt-en-gång).
+Veckor med blandade statusar blockeras helt från ny inskickning.
+Inga DELETE.
 
 ### cal_reservation_users — bokning ↔ kund
 `resid`, `memberid`, `owner` (**1 = kunden**), `invited`, `perm_*`.
@@ -51,7 +64,7 @@ Appen: **read-only** (JOIN i alla bokningsfrågor).
 | Värde | Betydelse | Sätts av |
 |---|---|---|
 | 0 | Utkast / ej rapporterad | default; admin-redigeringar |
-| 1 | Inskickad, väntar godkännande | anställd (submit / timjustering) — legacy och denna app |
+| 1 | Inskickad, väntar godkännande | anställd via submit (denna app: endast hela utkastveckor; legacy satte 1 även vid timjustering) |
 | 2 | Godkänd / låst | scheduledev admin (`tool=approval` → `approve_res`) |
 
 Vecka lagras inte — den identifieras av bokningarnas `start_date` bucketad

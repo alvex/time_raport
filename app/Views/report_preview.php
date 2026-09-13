@@ -55,6 +55,10 @@ $tr_sched = new ScheduleService();
 
 <?php if ($report['allApproved']): ?>
   <div class="alert alert-notice"><?= View::e(t('report.week_locked')) ?></div>
+<?php elseif ($report['mixedLocked']): ?>
+  <div class="alert alert-warning"><?= View::e(t('report.mixed_locked')) ?></div>
+<?php elseif ($report['submittedLocked']): ?>
+  <div class="alert alert-notice"><?= View::e(t('report.submitted_locked')) ?></div>
 <?php elseif ($report['canSubmit']): ?>
   <div class="card submit-card">
     <p><?= View::e(t('report.confirm_info')) ?></p>

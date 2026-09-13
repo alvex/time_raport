@@ -97,5 +97,10 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
     <a class="btn btn-primary btn-block" href="<?= View::e(View::url('report_preview', ['week' => $week['isoWeek']])) ?>">
       <?= View::e(t('week.review', ['week' => $week['weekNumber']])) ?>
     </a>
+    <?php if ($week['draftCount'] > 0 && $week['lockedCount'] > 0): ?>
+    <p class="report-blocked" role="alert"><?= View::e(t('report.mixed_locked')) ?></p>
+    <?php elseif ($week['draftCount'] === 0 && $week['lockedCount'] > 0): ?>
+    <p class="report-info"><?= View::e(t('report.submitted_locked')) ?></p>
+    <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>

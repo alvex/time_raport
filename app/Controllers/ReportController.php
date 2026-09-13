@@ -31,7 +31,8 @@ final class ReportController
 
         View::render('report_preview', [
             'report'    => $report,
-            'onceToken' => Csrf::issueOnce('report_' . $isoWeek),
+            // One-time token only when submission is actually possible.
+            'onceToken' => $report['canSubmit'] ? Csrf::issueOnce('report_' . $isoWeek) : null,
             'notice'    => Session::getFlash('notice'),
             'warning'   => Session::getFlash('warning'),
         ]);
@@ -69,6 +70,10 @@ final class ReportController
             Session::flash('warning', tp('report.blocked', $result['invalidCount']));
         } elseif ($result['reason'] === 'approved') {
             Session::flash('warning', t('report.approved_locked'));
+        } elseif ($result['reason'] === 'locked_mixed') {
+            Session::flash('warning', t('report.mixed_locked'));
+        } elseif ($result['reason'] === 'locked_submitted') {
+            Session::flash('warning', t('report.submitted_locked'));
         } else {
             Session::flash('warning', t('report.empty'));
         }

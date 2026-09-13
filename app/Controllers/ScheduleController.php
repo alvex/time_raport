@@ -84,7 +84,10 @@ final class ScheduleController
         }
 
         if (!$booking['editable']) {
-            Session::flash('warning', t('job.locked'));
+            // Locked: submitted (1) or approved (2). The repository's
+            // is_pending = 0 condition is the final guard below anyway.
+            Session::flash('warning', t((int)$booking['is_pending'] === 1
+                ? 'job.locked_submitted' : 'job.locked_approved'));
             header('Location: ' . View::url('job', ['resid' => $resid]));
             return;
         }

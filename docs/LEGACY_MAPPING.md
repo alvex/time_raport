@@ -19,7 +19,7 @@ och rå databas, inte sida-vid-sida i browser.
 | Veckostart måndag, 7 dagar | `lib/MyCalendar.class.php:141-163` | `ScheduleService::weekBounds` (ISO-år) |
 | Tidsvisning + hourOffset | `lib/Time.class.php:23-51,145-217` | `Services\TimeFormatter` |
 | Timberäkning per rad + veckototal | `templates/cpanel.template.php:572-621` | `ScheduleService::calculateBookingMinutes/-WeekMinutes` |
-| Timjustering (changeTimes=1) skriver starttime/endtime/modified/is_pending/old_hours | `reserve.php` + `lib/db/ResDB.class.php:333-354`, `lib/Reservation.class.php:1215-1227` | `ScheduleController::jobUpdateTimes` + `BookingRepository::updateTimes` |
+| Timjustering (changeTimes=1); nya appen skriver starttime/endtime/modified/old_hours — endast på utkastrader (`is_pending=0`), och raden förblir utkast (legacy satte is_pending=1) | `reserve.php` + `lib/db/ResDB.class.php:333-354`, `lib/Reservation.class.php:1215-1227` | `ScheduleController::jobUpdateTimes` + `BookingRepository::updateTimes` |
 | Rapportpreview | `lib/Admin.class.php:319-331`, `templates/resources.template.php:261-331` | `ReportController::preview` + `views/report_preview.php` |
 | Submit: `is_pending = 1` på valda resids | `lib/Admin.class.php:332-340`, `lib/db/AdminDB.class.php:981-988` | `ReportService::submitReport` + `BookingRepository::markPending` |
 | Rapportmail till jobb@hemfresh.se, ämne "\<Namn\> Tid Redovisning!" | `lib/Admin.class.php:745-775`, `config/config.php:31` | `ReportService::buildEmailHtml` + `Core\Mailer` |
@@ -58,8 +58,10 @@ och rå databas, inte sida-vid-sida i browser.
 
 ## Medvetet bevarade legacy-beteenden
 
-- Omskick av en vecka vars rader är `is_pending = 1` är tillåtet (anställda
-  skickar om efter justeringar); endast helt godkända veckor nekas.
+- ~~Omskick av pending-vecka~~ **ÄNDRAT 2026-09-14:** legacy tillät omskick
+  av `is_pending = 1`-veckor; nya appen låser inskickade pass helt —
+  endast rena utkastveckor (alla rader 0) kan skickas, blandade veckor
+  blockeras, och timjustering markerar inte längre raden som inskickad.
 - `markPending` rör inte `modified` (legacy-paritet, `AdminDB.class.php:984`).
 - `old_hours` sätts vid första justeringen och bevaras vid efterföljande
   (`Reservation.class.php:1218`); rapporten visar "nya (bokade)".

@@ -85,7 +85,9 @@ return [
     'job.invalid_format'    => 'Ange tider som HH:MM i 5-minuterssteg.',
     'job.end_before_start'  => 'Sluttiden får inte vara före starttiden (samma dag).',
     'job.locked'            => 'Jobbet är redan godkänt och kan inte ändras.',
-    'job.update_failed'     => 'Jobbet kunde inte uppdateras (redan godkänt?).',
+    'job.locked_submitted'  => 'Tidrapporten är inskickad och kan inte längre ändras.',
+    'job.locked_approved'   => 'Tidrapporten är godkänd och låst.',
+    'job.update_failed'     => 'Jobbet kunde inte uppdateras — det är låst eller redan inskickat.',
 
     // Tidrapport
     'report.title'          => 'Tidrapport',
@@ -104,6 +106,8 @@ return [
     'report.mail_failed'    => '(Obs: e-postbekräftelsen kunde inte skickas — administratören är informerad.)',
     'report.already'        => 'Rapporten är redan inskickad.',
     'report.approved_locked' => 'Veckan är redan godkänd och kan inte skickas igen.',
+    'report.submitted_locked' => 'Inskickad – väntar på godkännande. Rapporten kan inte ändras eller skickas igen.',
+    'report.mixed_locked'   => 'Veckan innehåller redan inskickade eller godkända pass och kan därför inte skickas igen.',
     'report.empty'          => 'Det finns inga jobb att rapportera för den veckan.',
     'report.blocked.one'    => '{n} pass behöver rättas innan rapporten kan skickas.',
     'report.blocked.other'  => '{n} pass behöver rättas innan rapporten kan skickas.',

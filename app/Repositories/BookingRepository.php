@@ -54,24 +54,14 @@ final class BookingRepository
         return $row === false ? null : $row;
     }
 
-    /** Row locks inside the caller's transaction (report submission). */
-    public function lockForUpdate(array $resids, string $machid): array
-    {
-        if ($resids === []) {
-            return [];
-        }
-        $in = implode(',', array_fill(0, count($resids), '?'));
-        $sql = "SELECT resid, is_pending FROM cal_reservations
-                WHERE resid IN ($in) AND machid = ? FOR UPDATE";
-        $stmt = Database::get()->prepare($sql);
-        $stmt->execute([...array_values($resids), $machid]);
-        return $stmt->fetchAll();
-    }
-
     /**
-     * Report submission: legacy parity with AdminDB::pending_reservation()
-     * (sets only is_pending, does not touch modified) plus the ownership
-     * and state guards legacy lacks.
+     * Report submission. Only DRAFT rows (is_pending = 0) may ever be
+     * submitted — a submitted (1) or approved (2) row is fully locked.
+     * The conditional UPDATE is the authoritative guard: on MyISAM a
+     * single statement is atomic (table lock), so a concurrent submit
+     * from another tab simply matches 0 rows here. rowCount() equals the
+     * number of rows that actually flipped 0 -> 1; the caller compares
+     * it against the expected count and treats any mismatch as failure.
      */
     public function markPending(array $resids, string $machid): int
     {
@@ -80,43 +70,30 @@ final class BookingRepository
         }
         $in = implode(',', array_fill(0, count($resids), '?'));
         $sql = "UPDATE cal_reservations SET is_pending = 1
-                WHERE resid IN ($in) AND machid = ? AND is_pending < 2";
+                WHERE resid IN ($in) AND machid = ? AND is_pending = 0";
         $stmt = Database::get()->prepare($sql);
         $stmt->execute([...array_values($resids), $machid]);
-        // Note: rowCount() counts CHANGED rows — a row already at
-        // is_pending = 1 (resubmission) is not included.
         return $stmt->rowCount();
     }
 
     /**
-     * Employee hour adjustment — mirror of the columns legacy ResDB
-     * writes for this flow (lib/db/ResDB.class.php:333): times, modified,
-     * is_pending = 1 and old_hours (original hours, preserved once set).
+     * Employee hour adjustment — writes the same columns as legacy ResDB
+     * (lib/db/ResDB.class.php:333): times, modified, old_hours. ONLY a
+     * draft row (is_pending = 0) may be edited: a submitted or approved
+     * row is fully locked, and the condition here is the final guard —
+     * a stale form/tab or hand-crafted POST matches 0 rows and nothing
+     * (times, modified, old_hours, is_pending) changes.
+     * The row stays a draft (is_pending remains 0) until the week is
+     * submitted; the adjusted hours travel with the submission.
      */
     public function updateTimes(string $resid, string $machid, int $startMin, int $endMin, float $oldHours): int
     {
         $sql = "UPDATE cal_reservations
-                SET starttime = ?, endtime = ?, modified = ?, is_pending = 1, old_hours = ?
-                WHERE resid = ? AND machid = ? AND is_pending < 2";
+                SET starttime = ?, endtime = ?, modified = ?, old_hours = ?
+                WHERE resid = ? AND machid = ? AND is_pending = 0";
         $stmt = Database::get()->prepare($sql);
         $stmt->execute([$startMin, $endMin, time(), $oldHours, $resid, $machid]);
         return $stmt->rowCount();
     }
 
-    public function beginTransaction(): void
-    {
-        Database::get()->beginTransaction();
-    }
-
-    public function commit(): void
-    {
-        Database::get()->commit();
-    }
-
-    public function rollBack(): void
-    {
-        if (Database::get()->inTransaction()) {
-            Database::get()->rollBack();
-        }
-    }
 }

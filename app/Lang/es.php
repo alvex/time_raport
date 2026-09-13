@@ -85,7 +85,9 @@ return [
     'job.invalid_format'    => 'Indique las horas como HH:MM, en pasos de 5 minutos.',
     'job.end_before_start'  => 'La hora de fin no puede ser anterior a la de inicio (mismo día).',
     'job.locked'            => 'El trabajo ya está aprobado y no se puede modificar.',
-    'job.update_failed'     => 'No se pudo actualizar el trabajo (¿ya aprobado?).',
+    'job.locked_submitted'  => 'El informe se ha enviado y ya no se puede modificar.',
+    'job.locked_approved'   => 'El informe está aprobado y bloqueado.',
+    'job.update_failed'     => 'No se pudo actualizar el trabajo: está bloqueado o ya enviado.',
 
     // Informe de horas
     'report.title'          => 'Informe de horas',
@@ -104,6 +106,8 @@ return [
     'report.mail_failed'    => '(Nota: no se pudo enviar el correo de confirmación; el administrador ha sido informado.)',
     'report.already'        => 'El informe ya se ha enviado.',
     'report.approved_locked' => 'La semana ya está aprobada y no se puede volver a enviar.',
+    'report.submitted_locked' => 'Enviado: pendiente de aprobación. El informe no se puede modificar ni volver a enviar.',
+    'report.mixed_locked'   => 'La semana ya contiene turnos enviados o aprobados y no se puede volver a enviar.',
     'report.empty'          => 'No hay trabajos que reportar en esa semana.',
     'report.blocked.one'    => '{n} turno debe corregirse antes de poder enviar el informe.',
     'report.blocked.other'  => '{n} turnos deben corregirse antes de poder enviar el informe.',

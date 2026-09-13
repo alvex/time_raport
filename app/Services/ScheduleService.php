@@ -161,6 +161,8 @@ final class ScheduleService
             'totalHours'   => TimeFormatter::formatHours($totalMinutes / 60),
             'jobCount'     => count($bookings),
             'invalidCount' => count(array_filter($bookings, static fn($b) => $b['invalid'])),
+            'draftCount'   => count(array_filter($bookings, static fn($b) => (int)$b['is_pending'] === 0)),
+            'lockedCount'  => count(array_filter($bookings, static fn($b) => (int)$b['is_pending'] >= 1)),
         ];
     }
 
@@ -205,10 +207,11 @@ final class ScheduleService
         $minutes = $this->calculateBookingMinutes($r);
         // Invalid working time = END BEFORE START only. Zero duration
         // (start == end) is a legitimate state — e.g. the customer
-        // cancelled the cleaning — and is reported as 0 h. Approved rows
-        // are locked and can no longer be corrected, so only rows with
-        // is_pending < 2 are flagged; the flag blocks report submission.
-        $invalid = $minutes < 0 && (int)$r['is_pending'] < 2;
+        // cancelled the cleaning — and is reported as 0 h. Submitted and
+        // approved rows are fully locked and can no longer be corrected
+        // by the employee, so only DRAFT rows (is_pending = 0) are
+        // flagged; the flag blocks report submission.
+        $invalid = $minutes < 0 && (int)$r['is_pending'] === 0;
         $r['minutes']       = $minutes;
         $r['invalid']       = $invalid;   // views translate t('invalid.reason_negative')
         $r['hours']         = TimeFormatter::formatHours(max(0, $minutes) / 60);
@@ -231,8 +234,10 @@ final class ScheduleService
             : null;
         // 'invalid' outranks the report status visually. Language-neutral
         // key; views translate via t('status.' . status_key).
+        // Editable = DRAFT ONLY: a submitted (1) or approved (2) row is
+        // fully locked for the employee.
         $r['status_key']    = $invalid ? 'invalid' : ReportService::bookingStatus((int)$r['is_pending']);
-        $r['editable']      = (int)$r['is_pending'] < 2;
+        $r['editable']      = (int)$r['is_pending'] === 0;
         return $r;
     }
 }

@@ -53,34 +53,49 @@ final class ReportService
         return 'approved';
     }
 
-    /** Everything the preview/submit pages need for one week. */
+    /**
+     * Everything the preview/submit pages need for one week.
+     *
+     * Submission rule (enforced here, in submitReport() and ultimately by
+     * the repository's conditional UPDATE — never only in the UI):
+     *   Draft (0)     may be edited and submitted.
+     *   Submitted (1) is locked and can never be submitted again.
+     *   Approved (2)  is locked and can never be submitted again.
+     * A week may be submitted only when EVERY booking is a valid draft;
+     * a mixed week (drafts alongside submitted/approved rows) is blocked
+     * entirely to avoid partial or duplicate reports.
+     */
     public function buildWeekReport(string $machid, string $isoWeek, float $hourOffset): array
     {
         $week = $this->schedule->getWeekSchedule($machid, $isoWeek, $hourOffset);
-        $submittable = array_values(array_filter(
-            $week['bookings'],
-            static fn($b) => (int)$b['is_pending'] < 2
-        ));
-        $week['weekStatus']   = self::weekStatus($week['bookings']);
-        $week['submittable']  = $submittable;
-        // Invalid working times (invalidCount, set by ScheduleService)
-        // block submission until corrected — enforced server-side here
-        // and in submitReport(), not only in the UI.
-        $week['canSubmit']    = $submittable !== [] && $week['invalidCount'] === 0;
-        $week['allApproved']  = $week['bookings'] !== [] && $submittable === [];
+        $week['weekStatus']      = self::weekStatus($week['bookings']);
+        $week['allApproved']     = $week['bookings'] !== [] && $week['weekStatus'] === 'approved';
+        // Fully submitted (possibly partly approved) — waiting for admin.
+        $week['submittedLocked'] = $week['bookings'] !== []
+            && $week['draftCount'] === 0 && !$week['allApproved'];
+        // Drafts mixed with submitted/approved rows — resubmission blocked.
+        $week['mixedLocked']     = $week['draftCount'] > 0 && $week['lockedCount'] > 0;
+        $week['canSubmit']       = $week['bookings'] !== []
+            && $week['lockedCount'] === 0
+            && $week['invalidCount'] === 0;
         return $week;
     }
 
     /**
-     * Submit the week: mark the eligible bookings is_pending = 1 and send
-     * the report email (log mode in dev). Server-side recomputation only —
-     * no client-supplied hours are trusted. Resubmitting a week whose rows
-     * are is_pending = 1 is allowed (legacy behavior, e.g. after edits);
-     * a fully approved week is refused.
+     * Submit the week. Allowed ONLY when every booking is a draft
+     * (is_pending = 0) with valid times; submitted/approved/mixed weeks
+     * are refused before any write.
      *
-     * Legacy ordering is kept: state is committed first, then the mail is
-     * sent; a mail failure is logged but does not roll back the state
-     * (Admin.class.php:332-340).
+     * MyISAM gives no real transactions, so the exactly-once guarantee
+     * comes from the repository's single conditional UPDATE
+     * (WHERE ... AND is_pending = 0, atomic under the table lock) plus a
+     * strict row-count check: only the request whose UPDATE flipped ALL
+     * expected rows 0 -> 1 counts as the successful first submission and
+     * sends the report email. A concurrent/duplicate request matches 0
+     * (or fewer) rows, is logged, sends NO email and reports failure —
+     * so a double click, re-POST, stale tab or hand-crafted POST can
+     * neither resubmit nor duplicate the email. The one-time token and
+     * CSRF checks remain as outer layers but are not relied upon.
      */
     public function submitReport(string $machid, string $isoWeek, float $hourOffset, string $employeeName): array
     {
@@ -93,30 +108,29 @@ final class ReportService
             return ['ok' => false, 'reason' => 'invalid', 'submitted' => 0, 'mailOk' => false,
                     'invalidCount' => $report['invalidCount']];
         }
-        if (!$report['canSubmit']) {
+        if ($report['allApproved']) {
             return ['ok' => false, 'reason' => 'approved', 'submitted' => 0, 'mailOk' => false];
         }
+        if ($report['mixedLocked']) {
+            return ['ok' => false, 'reason' => 'locked_mixed', 'submitted' => 0, 'mailOk' => false];
+        }
+        if (!$report['canSubmit']) {
+            return ['ok' => false, 'reason' => 'locked_submitted', 'submitted' => 0, 'mailOk' => false];
+        }
 
-        $resids = array_map(static fn($b) => (string)$b['resid'], $report['submittable']);
+        // Every booking is a draft here; the conditional UPDATE is the
+        // authoritative re-check against the database's current state.
+        $resids = array_map(static fn($b) => (string)$b['resid'], $report['bookings']);
+        $count = $this->bookings->markPending($resids, $machid);
 
-        $this->bookings->beginTransaction();
-        try {
-            // Re-check under lock (no-op locks on MyISAM; the UPDATE's
-            // "is_pending < 2" condition is the atomic guard there).
-            $locked = $this->bookings->lockForUpdate($resids, $machid);
-            $eligible = array_map(
-                static fn($r) => (string)$r['resid'],
-                array_filter($locked, static fn($r) => (int)$r['is_pending'] < 2)
-            );
-            if ($eligible === []) {
-                $this->bookings->rollBack();
-                return ['ok' => false, 'reason' => 'approved', 'submitted' => 0, 'mailOk' => false];
-            }
-            $count = $this->bookings->markPending($eligible, $machid);
-            $this->bookings->commit();
-        } catch (\Throwable $e) {
-            $this->bookings->rollBack();
-            throw $e;
+        if ($count !== count($resids)) {
+            // Fewer (or zero) rows flipped than expected: a concurrent
+            // submission or state change won the race. Nothing more is
+            // written and NO email is sent — the winning request already
+            // sent the one report email.
+            Logger::warn("Report submit race/mismatch for $machid week $isoWeek: "
+                . "expected " . count($resids) . " rows, updated $count");
+            return ['ok' => false, 'reason' => 'locked_submitted', 'submitted' => $count, 'mailOk' => false];
         }
 
         $subject = $employeeName . ' Tid Redovisning!';
@@ -186,7 +200,7 @@ final class ReportService
         $rows = '';
         foreach ($report['bookings'] as $b) {
             $hours = $e($b['hours']);
-            if ($b['old_hours_disp'] !== null && (int)$b['is_pending'] === 1 && $b['old_hours_disp'] !== $b['hours']) {
+            if ($b['old_hours_disp'] !== null && $b['old_hours_disp'] !== $b['hours']) {
                 $hours .= ' (' . $e($b['old_hours_disp']) . ')';
             }
             $rows .= '<tr>'

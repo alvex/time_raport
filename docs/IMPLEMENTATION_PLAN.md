@@ -35,8 +35,9 @@ nya XAMPP). Resultat: docs/DATABASE.md, docs/LEGACY_MAPPING.md.
 - [x] Skrivtest mot offerbokning (Alvaro `sc14f38cc5bdc922`, 2012-W40,
       exakt före-tillstånd återställt efteråt) — samtliga PASS:
       fel machid = 0 rader; timjustering skriver tider+`is_pending=1` och
-      bevarar `old_hours`; submit ok + mail till `storage/mail/`; omskick av
-      pending-vecka tillåtet; godkänd vecka nekas utan skrivning; godkänd rad
+      bevarar `old_hours`; submit ok + mail till `storage/mail/`; **(ändrat
+      2026-09-14: omskick av inskickad vecka nekas numera — se
+      DATABASE.md:s låsningsregel och locking-testsviten)**; godkänd rad
       kan inte tidjusteras; återställning byte-exakt
 - [x] Rapportmail verifierat: ämne "\<Namn\> Tid Redovisning!", tabell med
       datum/kund/adress/tid/timmar "3 (4)"/kommentar/total

@@ -8,13 +8,13 @@
 | IDOR / manipulerat resource-/booking-id | Resource-id ENBART från session (`Core\Auth::id()`); varje fråga bär `machid = ?` — en kollegas `resid` ger 404 |
 | XSS | All utdata genom `View::e()` (htmlspecialchars ENT_QUOTES); legacy-datan entitetsavkodas först i `View::text()` och escapas sedan |
 | CSRF | Sessionstoken, valideras centralt för ALLA POST i `index.php` |
-| Dubbel-submit (rapport) | Engångstoken (`Csrf::issueOnce/consumeOnce`) + villkorad `UPDATE … is_pending < 2`; JS-knappspärr som bekvämlighet |
+| Dubbel-submit (rapport) | Engångstoken + villkorad `UPDATE … is_pending = 0` med strikt radräkningskontroll (mail endast när ALLA förväntade rader flippade 0→1; avvikelse loggas och behandlas som fel); JS-knappspärr som bekvämlighet |
 | Session fixation/hijacking | `session_regenerate_id(true)` vid login, `use_strict_mode`, HttpOnly, SameSite=Lax, eget cookienamn+path (`TIMERAPPORT_SID`, `/time_raportDev/`) |
 | Brute force | Filbaserad limiter per (IP,e-post): 5 fel → 15 min lås (`storage/ratelimit/`); enhetligt felmeddelande |
 | Källkodsläckage | `TIMERAPPORT`-guard i varje icke-entry-fil; `.htaccess`-deny som andra lager; loggar heter `*.log.php` med inledande `<?php exit;` |
 | Felhantering | `display_errors=0` forceras; exceptions → `storage/logs/` + generisk svensk felsida; aldrig SQL/stacktrace till användaren |
-| Godkänd data orörbar | `is_pending < 2` i båda UPDATE-satserna; inga DELETE; endast kolumnerna `is_pending/starttime/endtime/modified/old_hours` skrivs |
-| Serverstyrda värden | Timmar/totaler räknas alltid om server-side; tidsinput valideras (HH:MM, 5-min-steg, start<slut); `modified` = serverns `time()` |
+| Inskickad/godkänd data orörbar | `is_pending = 0`-villkor i båda UPDATE-satserna — inskickade (1) och godkända (2) rader kan aldrig skrivas om, oavsett manipulerad POST/URL/gammal flik; inga DELETE; endast kolumnerna `is_pending/starttime/endtime/modified/old_hours` skrivs |
+| Serverstyrda värden | Timmar/totaler räknas alltid om server-side; tidsinput valideras (HH:MM, 5-min-steg, slut ej före start; start=slut tillåtet = avbokat pass); `modified` = serverns `time()` |
 
 ## Lösenord — känd begränsning (v1)
 

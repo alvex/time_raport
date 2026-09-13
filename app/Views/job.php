@@ -26,6 +26,12 @@ use App\Core\View;
 <div class="card comment-card"><?= nl2br(View::e($b['comment'])) ?></div>
 <?php endif; ?>
 
+<?php if (!$b['editable']): ?>
+<div class="alert alert-warning">
+  <?= View::e(t((int)$b['is_pending'] === 1 ? 'job.locked_submitted' : 'job.locked_approved')) ?>
+</div>
+<?php endif; ?>
+
 <?php if ($b['editable']): ?>
 <h2 class="section-title"><?= View::e(t('job.adjust')) ?></h2>
 <div class="card">
