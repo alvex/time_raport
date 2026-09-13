@@ -60,9 +60,10 @@ final class View
     public static function badgeClass(string $status): string
     {
         return [
-            'Utkast'    => 'badge-utkast',
-            'Inskickad' => 'badge-inskickad',
-            'Godkänd'   => 'badge-godkand',
+            'Utkast'          => 'badge-utkast',
+            'Inskickad'       => 'badge-inskickad',
+            'Godkänd'         => 'badge-godkand',
+            'Behöver rättas'  => 'badge-invalid',
         ][$status] ?? 'badge-none';
     }
 

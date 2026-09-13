@@ -41,6 +41,16 @@ och rå databas, inte sida-vid-sida i browser.
 | BCC till anställd som aldrig fungerade (`$usr = isset(...)`-buggen) | Inte återskapad; mottagare är jobbEmail |
 | Ingen charset på DB-anslutningen + ad-hoc `utf8_encode` | Explicit latin1-anslutning + `View::text()`-normalisering (se DATABASE.md) |
 
+## Nya beteenden utan legacy-motsvarighet
+
+- **Ogiltiga arbetstider** (start == slut eller slut före start; sådana rader
+  finns i legacy-datan) flaggas "Behöver rättas" i veckovyn, bidrar med 0 h
+  till veckototalen och **blockerar rapportflödet server-side**: preview
+  omdirigeras till veckovyn och `ReportService::submitReport` vägrar med
+  reason `invalid` — kan inte kringgås via URL/POST. Godkända rader
+  (`is_pending = 2`) flaggas inte (de är låsta och kan inte rättas).
+  "Rätta pass" länkar till befintliga jobbsidans tidsformulär.
+
 ## Medvetet bevarade legacy-beteenden
 
 - Omskick av en vecka vars rader är `is_pending = 1` är tillåtet (anställda

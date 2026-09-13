@@ -98,11 +98,16 @@ final class ScheduleService
         return (int)$booking['endtime'] - (int)$booking['starttime'];
     }
 
+    /**
+     * Week total. Invalid rows (zero or negative duration — legacy data
+     * contains e.g. starttime == endtime) contribute 0, never a negative
+     * amount. Such rows are flagged 'invalid' and block report submission.
+     */
     public function calculateWeekMinutes(array $bookings): int
     {
         $total = 0;
         foreach ($bookings as $b) {
-            $total += $this->calculateBookingMinutes($b);
+            $total += max(0, $this->calculateBookingMinutes($b));
         }
         return $total;
     }
@@ -146,6 +151,7 @@ final class ScheduleService
             'totalMinutes' => $totalMinutes,
             'totalHours'   => TimeFormatter::formatHours($totalMinutes / 60),
             'jobCount'     => count($bookings),
+            'invalidCount' => count(array_filter($bookings, static fn($b) => $b['invalid'])),
         ];
     }
 
@@ -188,8 +194,15 @@ final class ScheduleService
     private function enrich(array $r, float $hourOffset): array
     {
         $minutes = $this->calculateBookingMinutes($r);
+        // Invalid working time (start == end, or end before start). Approved
+        // rows are locked and can no longer be corrected, so only rows with
+        // is_pending < 2 are flagged; the flag blocks report submission.
+        $invalid = $minutes <= 0 && (int)$r['is_pending'] < 2;
         $r['minutes']       = $minutes;
-        $r['hours']         = TimeFormatter::formatHours($minutes / 60);
+        $r['invalid']       = $invalid;
+        $r['invalid_reason'] = !$invalid ? null
+            : ($minutes === 0 ? 'Start- och sluttid är samma.' : 'Sluttiden är före starttiden.');
+        $r['hours']         = TimeFormatter::formatHours(max(0, $minutes) / 60);
         $r['display_start'] = TimeFormatter::formatTime((int)$r['starttime'], $hourOffset);
         $r['display_end']   = TimeFormatter::formatTime((int)$r['endtime'], $hourOffset);
         $r['display_date']  = TimeFormatter::formatDate((int)$r['start_date']);
@@ -202,7 +215,8 @@ final class ScheduleService
         $r['old_hours_disp'] = ($r['old_hours'] !== null && (float)$r['old_hours'] > 0)
             ? TimeFormatter::formatHours((float)$r['old_hours'])
             : null;
-        $r['status']        = ReportService::bookingStatus((int)$r['is_pending']);
+        // "Behöver rättas" outranks the report status visually.
+        $r['status']        = $invalid ? 'Behöver rättas' : ReportService::bookingStatus((int)$r['is_pending']);
         $r['editable']      = (int)$r['is_pending'] < 2;
         return $r;
     }

@@ -59,7 +59,10 @@ final class ReportService
         ));
         $week['weekStatus']   = self::weekStatus($week['bookings']);
         $week['submittable']  = $submittable;
-        $week['canSubmit']    = $submittable !== [] ;
+        // Invalid working times (invalidCount, set by ScheduleService)
+        // block submission until corrected — enforced server-side here
+        // and in submitReport(), not only in the UI.
+        $week['canSubmit']    = $submittable !== [] && $week['invalidCount'] === 0;
         $week['allApproved']  = $week['bookings'] !== [] && $submittable === [];
         return $week;
     }
@@ -81,6 +84,10 @@ final class ReportService
 
         if ($report['bookings'] === []) {
             return ['ok' => false, 'reason' => 'empty', 'submitted' => 0, 'mailOk' => false];
+        }
+        if ($report['invalidCount'] > 0) {
+            return ['ok' => false, 'reason' => 'invalid', 'submitted' => 0, 'mailOk' => false,
+                    'invalidCount' => $report['invalidCount']];
         }
         if (!$report['canSubmit']) {
             return ['ok' => false, 'reason' => 'approved', 'submitted' => 0, 'mailOk' => false];

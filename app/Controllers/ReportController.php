@@ -21,6 +21,14 @@ final class ReportController
         $isoWeek = $schedule->normalizeIsoWeek($_GET['week'] ?? null) ?? $schedule->currentIsoWeek();
         $report = $reports->buildWeekReport($machid, $isoWeek, Auth::hourOffset());
 
+        // Server-side gate: a week with invalid working times cannot reach
+        // the preview/submit step (the URL cannot bypass the week view).
+        if ($report['invalidCount'] > 0) {
+            Session::flash('warning', $report['invalidCount'] . ' pass behöver rättas innan rapporten kan skickas.');
+            header('Location: ' . View::url('week', ['week' => $isoWeek]));
+            return;
+        }
+
         View::render('report_preview', [
             'report'    => $report,
             'onceToken' => Csrf::issueOnce('report_' . $isoWeek),
@@ -57,6 +65,8 @@ final class ReportController
                 $msg .= ' (Obs: e-postbekräftelsen kunde inte skickas — administratören är informerad.)';
             }
             Session::flash('notice', $msg);
+        } elseif ($result['reason'] === 'invalid') {
+            Session::flash('warning', $result['invalidCount'] . ' pass behöver rättas innan rapporten kan skickas.');
         } elseif ($result['reason'] === 'approved') {
             Session::flash('warning', 'Veckan är redan godkänd och kan inte skickas igen.');
         } else {
