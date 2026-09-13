@@ -56,6 +56,17 @@ final class View
         return html_entity_decode($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
+    /** Render a partial from app/Views/partials/ with local variables. */
+    public static function partial(string $name, array $data = []): void
+    {
+        $file = TR_ROOT . '/app/Views/partials/' . $name . '.php';
+        if (!is_file($file)) {
+            throw new \RuntimeException('Partial not found: ' . $name);
+        }
+        extract($data, EXTR_SKIP);
+        require $file;
+    }
+
     /** CSS badge class for a report status label. */
     public static function badgeClass(string $status): string
     {

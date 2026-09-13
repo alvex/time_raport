@@ -43,7 +43,7 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
         </div>
         <span class="badge <?= View::e(View::badgeClass($b['status'])) ?>"><?= View::e($b['status']) ?></span>
       </div>
-      <div class="job-customer"><?= View::e($b['customer']) ?></div>
+      <div class="job-customer"><?php View::partial('customer', ['b' => $b]); ?></div>
       <?php if ($b['display_address'] !== ''): ?>
       <div class="job-address">
         <span class="job-pin"><?= $tr_pin ?></span>

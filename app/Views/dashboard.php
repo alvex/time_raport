@@ -27,7 +27,7 @@ use App\Core\View;
   <a class="card job-card<?= $nextJob !== null && $job['resid'] === $nextJob['resid'] ? ' job-next' : '' ?>"
      href="<?= View::e(View::url('job', ['resid' => $job['resid']])) ?>">
     <div class="job-time"><?= View::e($job['display_start']) ?>–<?= View::e($job['display_end']) ?></div>
-    <div class="job-customer"><?= View::e($job['customer']) ?></div>
+    <div class="job-customer"><?php View::partial('customer', ['b' => $job]); ?></div>
     <?php if ($job['display_address'] !== ''): ?>
     <div class="job-address"><?= View::e($job['display_address']) ?><?= $job['display_city'] !== '' ? ', ' . View::e($job['display_city']) : '' ?></div>
     <?php endif; ?>

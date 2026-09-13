@@ -5,7 +5,7 @@ use App\Core\View;
 <?php if (!empty($notice)): ?><div class="alert alert-notice"><?= View::e($notice) ?></div><?php endif; ?>
 <?php if (!empty($warning)): ?><div class="alert alert-warning"><?= View::e($warning) ?></div><?php endif; ?>
 
-<h1 class="page-title"><?= View::e($b['customer']) ?></h1>
+<h1 class="page-title"><?php View::partial('customer', ['b' => $b]); ?></h1>
 <p class="page-sub"><?= View::e($b['day_heading']) ?> · <span class="badge <?= View::e(View::badgeClass($b['status'])) ?>"><?= View::e($b['status']) ?></span></p>
 
 <div class="card detail-card">

@@ -202,6 +202,11 @@ a.card:hover { border-color: var(--primary); }
 .job-pin { flex: none; color: var(--accent-red); margin-top: 1px; }
 .job-hours { margin-top: 6px; font-weight: 600; color: var(--primary); }
 .job-oldhours { color: var(--ink-soft); font-weight: 400; font-size: 12.5px; margin-left: 6px; }
+
+/* Customer line partial: name · Kundnr N [key icon] */
+.cust { overflow-wrap: anywhere; }
+.cust-no { color: var(--ink-soft); font-weight: 400; font-size: .82em; white-space: nowrap; }
+.key-icon { color: var(--amber-btn); vertical-align: -2.5px; margin-left: 5px; flex: none; }
 .job-next { border-left: 4px solid var(--primary); }
 
 /* Invalid working-time panel (amber-50, border-l-4 amber-500) */

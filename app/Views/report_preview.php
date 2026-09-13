@@ -28,7 +28,7 @@ use App\Core\View;
       <tr>
         <td><?= View::e($b['display_date']) ?></td>
         <td>
-          <?= View::e($b['customer']) ?>
+          <?php View::partial('customer', ['b' => $b]); ?>
           <?php if ($b['display_address'] !== ''): ?>
           <div class="report-address"><?= View::e($b['display_address']) ?><?= $b['display_city'] !== '' ? ', ' . View::e($b['display_city']) : '' ?></div>
           <?php endif; ?>

@@ -23,7 +23,7 @@ final class BookingRepository
                res.starttime, res.endtime, res.created, res.modified, res.parentid,
                res.is_pending, res.summary, res.recess, res.attention, res.old_hours,
                lg.memberid AS customer_id, lg.fname, lg.lname, lg.address, lg.city,
-               lg.phone, lg.mobil
+               lg.phone, lg.mobil, lg.`keys` AS customer_keys
         FROM cal_reservations res
         INNER JOIN cal_reservation_users ru ON ru.resid = res.resid AND ru.owner = 1
         INNER JOIN cal_login lg ON lg.memberid = ru.memberid";

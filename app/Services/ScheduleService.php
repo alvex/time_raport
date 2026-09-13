@@ -209,6 +209,11 @@ final class ScheduleService
         $r['display_date']  = TimeFormatter::formatDate((int)$r['start_date']);
         $r['day_heading']   = TimeFormatter::formatDayHeading((int)$r['start_date']);
         $r['customer']      = trim(View::text($r['fname']) . ' ' . View::text($r['lname']));
+        $r['customer_no']   = (string)$r['customer_id'];
+        // cal_login.keys på KUNDRADEN: 1 = kundens fysiska nyckel finns hos
+        // HemFresh och ska tas med (legacy mycalendar.template.php:381).
+        // Samma kolumn markerar anställd-konton med 2 — därav strikt === 1.
+        $r['has_key']       = (int)($r['customer_keys'] ?? 0) === 1;
         $r['display_address'] = trim(View::text($r['address']), " \t,");
         $r['display_city']  = View::text($r['city']);
         $r['comment']       = View::text($r['summary']);
