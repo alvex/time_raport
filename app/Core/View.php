@@ -67,15 +67,15 @@ final class View
         require $file;
     }
 
-    /** CSS badge class for a report status label. */
-    public static function badgeClass(string $status): string
+    /** CSS badge class for a status key (draft/submitted/approved/invalid). */
+    public static function badgeClass(string $statusKey): string
     {
         return [
-            'Ej rapporterad'  => 'badge-utkast',
-            'Inskickad'       => 'badge-inskickad',
-            'Godkänd'         => 'badge-godkand',
-            'Behöver rättas'  => 'badge-invalid',
-        ][$status] ?? 'badge-none';
+            'draft'     => 'badge-utkast',
+            'submitted' => 'badge-inskickad',
+            'approved'  => 'badge-godkand',
+            'invalid'   => 'badge-invalid',
+        ][$statusKey] ?? 'badge-none';
     }
 
     /** Build an app URL: url('week', ['week' => '2026-W37']). */

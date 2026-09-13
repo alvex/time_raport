@@ -17,7 +17,11 @@ use App\Repositories\BookingRepository;
  */
 final class ReportService
 {
-    public const STATUS_LABELS = [0 => 'Ej rapporterad', 1 => 'Inskickad', 2 => 'Godkänd'];
+    /**
+     * is_pending -> language-neutral status keys. Display labels come
+     * from the Translator ('status.<key>'); logic compares keys only.
+     */
+    public const STATUS_KEYS = [0 => 'draft', 1 => 'submitted', 2 => 'approved'];
 
     private BookingRepository $bookings;
     private ScheduleService $schedule;
@@ -30,23 +34,23 @@ final class ReportService
 
     public static function bookingStatus(int $isPending): string
     {
-        return self::STATUS_LABELS[$isPending] ?? 'Okänd';
+        return self::STATUS_KEYS[$isPending] ?? 'none';
     }
 
-    /** Week status: any draft -> Utkast; else any submitted -> Inskickad; else Godkänd. */
+    /** Week status key: any draft -> draft; else any submitted -> submitted; else approved. */
     public static function weekStatus(array $bookings): string
     {
         if ($bookings === []) {
-            return '–';
+            return 'none';
         }
         $states = array_map(static fn($b) => (int)$b['is_pending'], $bookings);
         if (in_array(0, $states, true)) {
-            return self::STATUS_LABELS[0];
+            return 'draft';
         }
         if (in_array(1, $states, true)) {
-            return self::STATUS_LABELS[1];
+            return 'submitted';
         }
-        return self::STATUS_LABELS[2];
+        return 'approved';
     }
 
     /** Everything the preview/submit pages need for one week. */
@@ -169,9 +173,15 @@ final class ReportService
      * (templates/resources.template.php:261) — date, customer, address,
      * hours (with original hours when adjusted), comment, week total —
      * with all values recomputed server-side and escaped.
+     *
+     * ALWAYS SWEDISH regardless of the employee's UI language: the mail
+     * goes to the administrative approval process at jobb@hemfresh.se,
+     * which works in Swedish (legacy behavior). The week range label is
+     * therefore rebuilt with the sv locale explicitly.
      */
     private function buildEmailHtml(array $report, string $employeeName): string
     {
+        $rangeLabelSv = $this->schedule->weekRangeLabel($report['isoWeek'], 'sv');
         $e = static fn(?string $s) => View::e($s);
         $rows = '';
         foreach ($report['bookings'] as $b) {
@@ -190,7 +200,7 @@ final class ReportService
         }
         return '<html><body>'
             . '<h2>' . $e($employeeName) . ' – Tidrapport vecka ' . $e((string)$report['weekNumber'])
-            . ' (' . $e($report['rangeLabel']) . ')</h2>'
+            . ' (' . $e($rangeLabelSv) . ')</h2>'
             . '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse">'
             . '<tr><th>Datum</th><th>Kund</th><th>Adress</th><th>Tid</th><th>Timmar</th><th>Kommentar</th></tr>'
             . "\n" . $rows

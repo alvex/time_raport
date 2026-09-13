@@ -9,17 +9,17 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
 <?php if (!empty($warning)): ?><div class="alert alert-warning"><?= View::e($warning) ?></div><?php endif; ?>
 
 <div class="weekpicker">
-  <a class="weekpicker-btn" href="<?= View::e(View::url('week', ['week' => $prevWeek])) ?>" aria-label="Föregående vecka">
+  <a class="weekpicker-btn" href="<?= View::e(View::url('week', ['week' => $prevWeek])) ?>" aria-label="<?= View::e(t('week.prev')) ?>">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6 8.5 12l6 6"/></svg>
   </a>
   <div class="weekpicker-title">
-    <h1>Vecka <?= View::e((string)$week['weekNumber']) ?></h1>
+    <h1><?= View::e(t('week.title', ['week' => $week['weekNumber']])) ?></h1>
     <p><?= View::e($week['rangeLabel']) ?></p>
     <?php if ($week['isoWeek'] !== $currentWeek): ?>
-    <a class="weekpicker-today" href="<?= View::e(View::url('week')) ?>">Till denna vecka</a>
+    <a class="weekpicker-today" href="<?= View::e(View::url('week')) ?>"><?= View::e(t('week.to_current')) ?></a>
     <?php endif; ?>
   </div>
-  <a class="weekpicker-btn" href="<?= View::e(View::url('week', ['week' => $nextWeek])) ?>" aria-label="Nästa vecka">
+  <a class="weekpicker-btn" href="<?= View::e(View::url('week', ['week' => $nextWeek])) ?>" aria-label="<?= View::e(t('week.next')) ?>">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>
   </a>
 </div>
@@ -27,8 +27,8 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
 <?php foreach ($week['days'] as $day): ?>
   <?php if ($day['bookings'] === []) continue; ?>
   <div class="day-head<?= $day['isToday'] ? ' day-today' : '' ?>">
-    <h2><?= View::e($day['heading']) ?><?= $day['isToday'] ? ' · idag' : '' ?></h2>
-    <span class="day-count"><?= count($day['bookings']) ?> pass</span>
+    <h2><?= View::e($day['heading']) ?><?= $day['isToday'] ? ' · ' . View::e(t('common.today_marker')) : '' ?></h2>
+    <span class="day-count"><?= count($day['bookings']) ?> <?= View::e(tp('unit.pass', count($day['bookings']))) ?></span>
   </div>
 
   <?php foreach ($day['bookings'] as $b): ?>
@@ -37,11 +37,11 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
       <div class="job-row">
         <div>
           <div class="job-time"><?= View::e($b['display_start']) ?>–<?= View::e($b['display_end']) ?></div>
-          <div class="job-duration"><?= View::e($b['hours']) ?> <?= $b['hours'] === '1' ? 'timme' : 'timmar' ?><?php
+          <div class="job-duration"><?= View::e($b['hours']) ?> <?= View::e(tp('unit.hours', (float)$b['hours'])) ?><?php
             if ($b['old_hours_disp'] !== null && $b['old_hours_disp'] !== $b['hours']): ?>
-            <span class="job-oldhours">(bokat: <?= View::e($b['old_hours_disp']) ?> h)</span><?php endif; ?></div>
+            <span class="job-oldhours"><?= View::e(t('common.booked_note', ['h' => $b['old_hours_disp']])) ?></span><?php endif; ?></div>
         </div>
-        <span class="badge <?= View::e(View::badgeClass($b['status'])) ?>"><?= View::e($b['status']) ?></span>
+        <span class="badge <?= View::e(View::badgeClass($b['status_key'])) ?>"><?= View::e(t('status.' . $b['status_key'])) ?></span>
       </div>
       <div class="job-customer"><?php View::partial('customer', ['b' => $b]); ?></div>
       <?php if ($b['display_address'] !== ''): ?>
@@ -56,8 +56,8 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
     <div class="invalid-panel">
       <span class="invalid-icon"><?= $tr_warn ?></span>
       <div>
-        <strong>Passet saknar arbetstid</strong><br>
-        <?= View::e($b['invalid_reason']) ?> Rätta tiden innan veckans rapport skickas.
+        <strong><?= View::e(t('invalid.title')) ?></strong><br>
+        <?= View::e(t('invalid.reason_negative')) ?> <?= View::e(t('invalid.fix_hint')) ?>
       </div>
     </div>
     <?php endif; ?>
@@ -65,11 +65,11 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
     <?php if ($b['invalid'] || $b['maps_url'] !== null): ?>
     <div class="job-actions">
       <?php if ($b['invalid']): ?>
-      <a class="btn btn-fix" href="<?= View::e(View::url('job', ['resid' => $b['resid']])) ?>">Rätta pass</a>
+      <a class="btn btn-fix" href="<?= View::e(View::url('job', ['resid' => $b['resid']])) ?>"><?= View::e(t('invalid.fix_btn')) ?></a>
       <?php endif; ?>
       <?php if ($b['maps_url'] !== null): ?>
       <a class="btn btn-maps" href="<?= View::e($b['maps_url']) ?>" target="_blank" rel="noopener noreferrer">
-        <?= $tr_nav ?> <?= $b['invalid'] ? 'Vägbeskrivning' : 'Starta vägbeskrivning' ?>
+        <?= $tr_nav ?> <?= View::e($b['invalid'] ? t('maps.short') : t('maps.start')) ?>
       </a>
       <?php endif; ?>
     </div>
@@ -79,23 +79,23 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
 <?php endforeach; ?>
 
 <?php if ($week['jobCount'] === 0): ?>
-  <div class="card empty-card">Inga jobb den här veckan.</div>
+  <div class="card empty-card"><?= View::e(t('week.no_jobs')) ?></div>
 <?php else: ?>
   <div class="card total-card">
-    <span>Totalt vecka <?= View::e((string)$week['weekNumber']) ?></span>
-    <strong><?= View::e($week['totalHours']) ?> h</strong>
+    <span><?= View::e(t('week.total', ['week' => $week['weekNumber']])) ?></span>
+    <strong><?= View::e($week['totalHours']) ?> <?= View::e(t('common.hours_short')) ?></strong>
   </div>
 
   <?php if ($week['invalidCount'] > 0): ?>
     <span class="btn btn-primary btn-block btn-disabled" aria-disabled="true">
-      Granska tidrapport för vecka <?= View::e((string)$week['weekNumber']) ?>
+      <?= View::e(t('week.review', ['week' => $week['weekNumber']])) ?>
     </span>
     <p class="report-blocked" role="alert">
-      <?= View::e((string)$week['invalidCount']) ?> pass behöver rättas innan rapporten kan skickas.
+      <?= View::e(tp('report.blocked', $week['invalidCount'])) ?>
     </p>
   <?php else: ?>
     <a class="btn btn-primary btn-block" href="<?= View::e(View::url('report_preview', ['week' => $week['isoWeek']])) ?>">
-      Granska tidrapport för vecka <?= View::e((string)$week['weekNumber']) ?>
+      <?= View::e(t('week.review', ['week' => $week['weekNumber']])) ?>
     </a>
   <?php endif; ?>
 <?php endif; ?>

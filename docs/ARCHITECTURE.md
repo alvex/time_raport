@@ -32,6 +32,12 @@ extra lager.
 
 ## Nyckelbegrepp
 
+- **Språk (i18n):** UI:t finns på svenska (standard/fallback), spanska och
+  ryska via `App\Core\Translator` + `app/Lang/*.php`. Valet lagras i
+  session + cookien `TIMERAPPORT_LANG`; byte sker via POST `set_lang` med
+  CSRF och säker intern retur. Rapportmailet är alltid svenskt.
+  Detaljer: docs/I18N.md.
+
 - **Resource-identitet:** `authenticated_resource_id` = `cal_login.memberid`
   = `cal_resources.machid` (legacy-konvention). Lagras ENBART i sessionen
   (`App\Core\Auth::id()`); läses aldrig från URL. Alla SQL-frågor bär

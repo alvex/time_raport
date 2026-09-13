@@ -24,7 +24,7 @@ final class ReportController
         // Server-side gate: a week with invalid working times cannot reach
         // the preview/submit step (the URL cannot bypass the week view).
         if ($report['invalidCount'] > 0) {
-            Session::flash('warning', $report['invalidCount'] . ' pass behöver rättas innan rapporten kan skickas.');
+            Session::flash('warning', tp('report.blocked', $report['invalidCount']));
             header('Location: ' . View::url('week', ['week' => $isoWeek]));
             return;
         }
@@ -52,7 +52,7 @@ final class ReportController
         // One-time token: a double click or back-button resubmit fails
         // here and gets a friendly notice instead of a second submission.
         if (!Csrf::consumeOnce('report_' . $isoWeek, $_POST['_once'] ?? null)) {
-            Session::flash('notice', 'Rapporten är redan inskickad.');
+            Session::flash('notice', t('report.already'));
             header('Location: ' . View::url('history'));
             return;
         }
@@ -60,17 +60,17 @@ final class ReportController
         $result = $reports->submitReport($machid, $isoWeek, Auth::hourOffset(), Auth::name());
 
         if ($result['ok']) {
-            $msg = 'Tidrapporten för vecka ' . $schedule->weekNumber($isoWeek) . ' är inskickad för godkännande.';
+            $msg = t('report.sent', ['week' => $schedule->weekNumber($isoWeek)]);
             if (!$result['mailOk']) {
-                $msg .= ' (Obs: e-postbekräftelsen kunde inte skickas — administratören är informerad.)';
+                $msg .= ' ' . t('report.mail_failed');
             }
             Session::flash('notice', $msg);
         } elseif ($result['reason'] === 'invalid') {
-            Session::flash('warning', $result['invalidCount'] . ' pass behöver rättas innan rapporten kan skickas.');
+            Session::flash('warning', tp('report.blocked', $result['invalidCount']));
         } elseif ($result['reason'] === 'approved') {
-            Session::flash('warning', 'Veckan är redan godkänd och kan inte skickas igen.');
+            Session::flash('warning', t('report.approved_locked'));
         } else {
-            Session::flash('warning', 'Det finns inga jobb att rapportera för den veckan.');
+            Session::flash('warning', t('report.empty'));
         }
         header('Location: ' . View::url('history'));
     }

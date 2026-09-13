@@ -59,12 +59,17 @@ final class TimeFormatter
         return date('Y/m/d', $ts);
     }
 
-    /** Swedish day heading, e.g. "Måndag 7 september". */
-    public static function formatDayHeading(int $ts): string
+    /**
+     * Localized day heading, e.g. "Måndag 7 september" / "Lunes 7 de
+     * septiembre" / "Понедельник, 7 сентября". Names and pattern come
+     * from the language files (no intl dependency).
+     */
+    public static function formatDayHeading(int $ts, ?string $locale = null): string
     {
-        static $days = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
-        static $months = [1 => 'januari', 'februari', 'mars', 'april', 'maj', 'juni',
-            'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
-        return $days[(int)date('w', $ts)] . ' ' . (int)date('j', $ts) . ' ' . $months[(int)date('n', $ts)];
+        return t('date.day_heading', [
+            'day'   => t('date.day.' . (int)date('w', $ts), [], $locale),
+            'd'     => (int)date('j', $ts),
+            'month' => t('date.month.' . (int)date('n', $ts), [], $locale),
+        ], $locale);
     }
 }

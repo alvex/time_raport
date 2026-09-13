@@ -26,7 +26,7 @@ final class AuthController
         $password = (string)($_POST['password'] ?? '');
 
         if (Auth::tooManyAttempts(strtolower(trim($email)))) {
-            Session::flash('login_error', 'För många försök. Vänta 15 minuter och försök igen.');
+            Session::flash('login_error', t('login.error_locked'));
             header('Location: ' . View::url('login'));
             return;
         }
@@ -37,7 +37,7 @@ final class AuthController
         }
 
         // Uniform message — reveals nothing about which part failed.
-        Session::flash('login_error', 'Fel e-post eller lösenord.');
+        Session::flash('login_error', t('login.error_invalid'));
         header('Location: ' . View::url('login'));
     }
 

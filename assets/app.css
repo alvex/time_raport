@@ -63,11 +63,50 @@ a, button { transition: background-color .15s ease, color .15s ease, border-colo
 .brand-hem { color: var(--primary); }
 .brand-fresh { color: var(--accent-red); }
 .brand-app { color: var(--ink-soft); font-weight: 400; font-size: 13px; margin-left: 6px; }
+.topbar-actions { display: flex; align-items: center; gap: 2px; }
 .logout-form { margin: 0; }
 .btn-link {
   background: none; border: none; color: var(--primary);
   font-size: 14px; cursor: pointer; padding: 10px; min-height: 44px;
 }
+
+/* Language menu (details/summary — works without JavaScript) */
+.langmenu { position: relative; }
+.langmenu summary {
+  list-style: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; min-width: 44px; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  color: var(--ink-nav); font-size: 13px; font-weight: 600;
+}
+.langmenu summary::-webkit-details-marker { display: none; }
+.langmenu summary::after { content: " ▾"; font-size: 10px; }
+.langmenu[open] summary { background: var(--primary-tint); color: var(--primary); border-color: var(--primary); }
+.langmenu-list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+  min-width: 150px; margin: 0; padding: 6px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow-md);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.langmenu-item {
+  display: block; width: 100%; text-align: left;
+  background: none; border: none; border-radius: 8px;
+  min-height: 44px; padding: 10px 12px;
+  font-size: 15px; color: var(--ink); cursor: pointer;
+}
+.langmenu-item:hover { background: var(--bg); }
+.langmenu-item.is-active { color: var(--primary); font-weight: 700; background: var(--primary-tint); }
+
+/* Language row on the login page */
+.login-langs { display: flex; justify-content: center; gap: 6px; margin-top: 18px; flex-wrap: wrap; }
+.login-lang {
+  background: none; border: 1px solid transparent; border-radius: 999px;
+  min-height: 40px; padding: 8px 14px;
+  font-size: 13.5px; color: var(--ink-soft); cursor: pointer;
+}
+.login-lang:hover { color: var(--primary); background: var(--primary-tint); }
+.login-lang.is-active { color: var(--primary); border-color: var(--primary); font-weight: 600; }
 
 /* Pill navigation */
 .pillnav {

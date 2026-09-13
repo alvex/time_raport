@@ -44,7 +44,7 @@ final class Session
         return null;
     }
 
-    private static function basePath(): string
+    public static function basePath(): string
     {
         $dir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
         return $dir === '' ? '/' : $dir . '/';

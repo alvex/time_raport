@@ -20,8 +20,8 @@ try {
     if (!isset($routes[$page])) {
         http_response_code(404);
         View::render('error', [
-            'title'   => 'Sidan finns inte',
-            'message' => 'Sidan du försökte nå finns inte.',
+            'title'   => t('err.404_title'),
+            'message' => t('err.404_msg'),
         ]);
         exit;
     }
@@ -42,8 +42,8 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !Csrf::validate($_POST['_token'] ?? null)) {
         http_response_code(403);
         View::render('error', [
-            'title'   => 'Sessionen har gått ut',
-            'message' => 'Formuläret kunde inte verifieras. Gå tillbaka och försök igen.',
+            'title'   => t('err.csrf_title'),
+            'message' => t('err.csrf_msg'),
         ]);
         exit;
     }
@@ -54,7 +54,7 @@ try {
     Logger::error($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString());
     http_response_code(500);
     View::render('error', [
-        'title'   => 'Något gick fel',
-        'message' => 'Det gick inte att läsa informationen just nu. Försök igen eller kontakta administratören.',
+        'title'   => t('err.generic_title'),
+        'message' => t('err.generic_msg'),
     ]);
 }

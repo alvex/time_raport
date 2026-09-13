@@ -43,8 +43,8 @@ final class ScheduleController
         if ($booking === null) {
             http_response_code(404);
             View::render('error', [
-                'title'   => 'Jobbet hittades inte',
-                'message' => 'Bokningen finns inte eller tillhör inte dig.',
+                'title'   => t('job.notfound_title'),
+                'message' => t('job.notfound_msg'),
             ]);
             return;
         }
@@ -77,14 +77,14 @@ final class ScheduleController
         if ($booking === null) {
             http_response_code(404);
             View::render('error', [
-                'title'   => 'Jobbet hittades inte',
-                'message' => 'Bokningen finns inte eller tillhör inte dig.',
+                'title'   => t('job.notfound_title'),
+                'message' => t('job.notfound_msg'),
             ]);
             return;
         }
 
         if (!$booking['editable']) {
-            Session::flash('warning', 'Jobbet är redan godkänt och kan inte ändras.');
+            Session::flash('warning', t('job.locked'));
             header('Location: ' . View::url('job', ['resid' => $resid]));
             return;
         }
@@ -94,7 +94,7 @@ final class ScheduleController
 
         if ($startDisp === null || $endDisp === null
             || $startDisp % 5 !== 0 || $endDisp % 5 !== 0) {
-            Session::flash('warning', 'Ange tider som HH:MM i 5-minuterssteg.');
+            Session::flash('warning', t('job.invalid_format'));
             header('Location: ' . View::url('job', ['resid' => $resid]));
             return;
         }
@@ -106,7 +106,7 @@ final class ScheduleController
         // (established practice in the legacy data). Only end BEFORE
         // start is rejected.
         if ($startStored > $endStored) {
-            Session::flash('warning', 'Sluttiden får inte vara före starttiden (samma dag).');
+            Session::flash('warning', t('job.end_before_start'));
             header('Location: ' . View::url('job', ['resid' => $resid]));
             return;
         }
@@ -121,9 +121,9 @@ final class ScheduleController
         if ($changed > 0) {
             Logger::info("Times updated resid=$resid machid=$machid "
                 . "{$booking['starttime']}-{$booking['endtime']} -> $startStored-$endStored");
-            Session::flash('notice', 'Tiderna är uppdaterade.');
+            Session::flash('notice', t('job.updated'));
         } else {
-            Session::flash('warning', 'Jobbet kunde inte uppdateras (redan godkänt?).');
+            Session::flash('warning', t('job.update_failed'));
         }
         header('Location: ' . View::url('job', ['resid' => $resid]));
     }

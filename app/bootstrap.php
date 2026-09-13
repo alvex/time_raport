@@ -35,14 +35,26 @@ function tr_config(string $key, $default = null)
     return $GLOBALS['tr_config'][$key] ?? $default;
 }
 
+/** Translate a UI string (see App\Core\Translator). Plain text — escape with View::e() in views. */
+function t(string $key, array $params = [], ?string $locale = null): string
+{
+    return \App\Core\Translator::get($key, $params, $locale);
+}
+
+/** Pluralized UI string; {n} is available in the translation. */
+function tp(string $key, int|float $n, array $params = [], ?string $locale = null): string
+{
+    return \App\Core\Translator::plural($key, $n, $params, $locale);
+}
+
 set_exception_handler(static function (Throwable $e): void {
     \App\Core\Logger::error('Uncaught: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {
         http_response_code(500);
     }
     \App\Core\View::render('error', [
-        'title'   => 'Något gick fel',
-        'message' => 'Det gick inte att läsa informationen just nu. Försök igen eller kontakta administratören.',
+        'title'   => t('err.generic_title'),
+        'message' => t('err.generic_msg'),
     ]);
     exit;
 });
@@ -57,3 +69,4 @@ set_error_handler(static function (int $no, string $str, string $file, int $line
 if (PHP_SAPI !== 'cli') {
     \App\Core\Session::start();
 }
+\App\Core\Translator::init();

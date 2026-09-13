@@ -25,8 +25,13 @@ document.addEventListener('submit', function (ev) {
     return;
   }
 
-  form.querySelectorAll('button[type="submit"]').forEach(function (b) {
-    b.disabled = true;
-    b.textContent = 'Skickar…';
-  });
+  var sending = document.documentElement.getAttribute('data-i18n-sending') || 'Skickar…';
+  // Defer: disabling synchronously would drop the clicked button's
+  // name=value pair (e.g. the language choice) from the submitted form.
+  setTimeout(function () {
+    form.querySelectorAll('button[type="submit"]').forEach(function (b) {
+      b.disabled = true;
+      if (!b.name) { b.textContent = sending; }
+    });
+  }, 0);
 });

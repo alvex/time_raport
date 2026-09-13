@@ -3,6 +3,7 @@ if (!defined('TIMERAPPORT')) { http_response_code(403); exit; }
 
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
+use App\Controllers\LangController;
 use App\Controllers\ReportController;
 use App\Controllers\ScheduleController;
 
@@ -11,6 +12,7 @@ use App\Controllers\ScheduleController;
  */
 return [
     'login'          => [AuthController::class,      'showLogin',      false, false],
+    'set_lang'       => [LangController::class,      'set',            false, true],
     'do_login'       => [AuthController::class,      'doLogin',        false, true],
     'logout'         => [AuthController::class,      'logout',         true,  true],
     'dashboard'      => [DashboardController::class, 'index',          true,  false],

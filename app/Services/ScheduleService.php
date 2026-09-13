@@ -76,20 +76,29 @@ final class ScheduleService
         return (int)substr($isoWeek, 6);
     }
 
-    /** "7–13 september 2026" style range label for the week. */
-    public function weekRangeLabel(string $isoWeek): string
+    /**
+     * Localized week range label, e.g. "7–13 september 2026" (sv),
+     * "7–13 de septiembre de 2026" (es), "7–13 сентября 2026" (ru).
+     * $locale forces a language (the report email passes 'sv').
+     * No intl extension: month names live in the language files.
+     */
+    public function weekRangeLabel(string $isoWeek, ?string $locale = null): string
     {
         $b = $this->weekBounds($isoWeek);
-        static $months = [1 => 'januari', 'februari', 'mars', 'april', 'maj', 'juni',
-            'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
         $sm = (int)date('n', $b['start']);
         $em = (int)date('n', $b['end']);
         $sd = (int)date('j', $b['start']);
         $ed = (int)date('j', $b['end']);
+        $year = date('Y', $b['end']);
         if ($sm === $em) {
-            return $sd . '–' . $ed . ' ' . $months[$em] . ' ' . date('Y', $b['end']);
+            return t('date.range_same', [
+                'd1' => $sd, 'd2' => $ed, 'month' => t("date.month.$em", [], $locale), 'year' => $year,
+            ], $locale);
         }
-        return $sd . ' ' . $months[$sm] . ' – ' . $ed . ' ' . $months[$em] . ' ' . date('Y', $b['end']);
+        return t('date.range_cross', [
+            'd1' => $sd, 'm1' => t("date.month.$sm", [], $locale),
+            'd2' => $ed, 'm2' => t("date.month.$em", [], $locale), 'year' => $year,
+        ], $locale);
     }
 
     /** Minutes for one booking, from raw stored minute columns. */
@@ -201,8 +210,7 @@ final class ScheduleService
         // is_pending < 2 are flagged; the flag blocks report submission.
         $invalid = $minutes < 0 && (int)$r['is_pending'] < 2;
         $r['minutes']       = $minutes;
-        $r['invalid']       = $invalid;
-        $r['invalid_reason'] = $invalid ? 'Sluttiden är före starttiden.' : null;
+        $r['invalid']       = $invalid;   // views translate t('invalid.reason_negative')
         $r['hours']         = TimeFormatter::formatHours(max(0, $minutes) / 60);
         $r['display_start'] = TimeFormatter::formatTime((int)$r['starttime'], $hourOffset);
         $r['display_end']   = TimeFormatter::formatTime((int)$r['endtime'], $hourOffset);
@@ -221,8 +229,9 @@ final class ScheduleService
         $r['old_hours_disp'] = ($r['old_hours'] !== null && (float)$r['old_hours'] > 0)
             ? TimeFormatter::formatHours((float)$r['old_hours'])
             : null;
-        // "Behöver rättas" outranks the report status visually.
-        $r['status']        = $invalid ? 'Behöver rättas' : ReportService::bookingStatus((int)$r['is_pending']);
+        // 'invalid' outranks the report status visually. Language-neutral
+        // key; views translate via t('status.' . status_key).
+        $r['status_key']    = $invalid ? 'invalid' : ReportService::bookingStatus((int)$r['is_pending']);
         $r['editable']      = (int)$r['is_pending'] < 2;
         return $r;
     }
