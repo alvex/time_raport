@@ -17,7 +17,7 @@ use App\Repositories\BookingRepository;
  */
 final class ReportService
 {
-    public const STATUS_LABELS = [0 => 'Utkast', 1 => 'Inskickad', 2 => 'Godkänd'];
+    public const STATUS_LABELS = [0 => 'Ej rapporterad', 1 => 'Inskickad', 2 => 'Godkänd'];
 
     private BookingRepository $bookings;
     private ScheduleService $schedule;
