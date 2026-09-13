@@ -1,0 +1,7 @@
+# Best-effort hardening — the app does NOT rely on this file being honored
+# (every PHP file also carries a TIMERAPPORT guard constant).
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^(app|config|storage|scripts|docs)(/|$) - [F,L]
+</IfModule>
+Options -Indexes
