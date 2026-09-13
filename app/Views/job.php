@@ -41,7 +41,8 @@ use App\Core\View;
       </label>
     </div>
     <button type="submit" class="btn btn-primary btn-block">Spara tider</button>
-    <p class="form-hint">Ursprungligt bokade timmar sparas och visas i tidrapporten.</p>
+    <p class="form-hint">Ursprungligt bokade timmar sparas och visas i tidrapporten.
+      Blev passet avbokat? Sätt samma start- och sluttid så rapporteras 0 timmar.</p>
   </form>
 </div>
 <?php endif; ?>

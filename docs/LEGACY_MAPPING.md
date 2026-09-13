@@ -43,13 +43,18 @@ och rå databas, inte sida-vid-sida i browser.
 
 ## Nya beteenden utan legacy-motsvarighet
 
-- **Ogiltiga arbetstider** (start == slut eller slut före start; sådana rader
-  finns i legacy-datan) flaggas "Behöver rättas" i veckovyn, bidrar med 0 h
-  till veckototalen och **blockerar rapportflödet server-side**: preview
-  omdirigeras till veckovyn och `ReportService::submitReport` vägrar med
-  reason `invalid` — kan inte kringgås via URL/POST. Godkända rader
-  (`is_pending = 2`) flaggas inte (de är låsta och kan inte rättas).
-  "Rätta pass" länkar till befintliga jobbsidans tidsformulär.
+- **Ogiltiga arbetstider** (slut före start) flaggas "Behöver rättas" i
+  veckovyn, bidrar med 0 h till veckototalen och **blockerar rapportflödet
+  server-side**: preview omdirigeras till veckovyn och
+  `ReportService::submitReport` vägrar med reason `invalid` — kan inte
+  kringgås via URL/POST. Godkända rader (`is_pending = 2`) flaggas inte
+  (de är låsta och kan inte rättas). "Rätta pass" länkar till befintliga
+  jobbsidans tidsformulär.
+  **OBS: 0 timmar (start == slut) är ett giltigt läge** — det är etablerad
+  praxis i legacy-datan för t.ex. avbokade städningar (ofta med
+  `old_hours` kvar som ursprungstimmar). Sådana pass visas med 0 timmar,
+  behåller sin vanliga rapportstatus och kan skickas in; tidsformuläret
+  tillåter start == slut för att nolla ett pass.
 
 ## Medvetet bevarade legacy-beteenden
 

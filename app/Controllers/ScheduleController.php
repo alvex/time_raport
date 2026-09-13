@@ -102,8 +102,11 @@ final class ScheduleController
         $startStored = TimeFormatter::displayToStored($startDisp, $offset);
         $endStored = TimeFormatter::displayToStored($endDisp, $offset);
 
-        if ($startStored >= $endStored) {
-            Session::flash('warning', 'Sluttiden måste vara efter starttiden (samma dag).');
+        // start == end is allowed: it records a cancelled visit as 0 h
+        // (established practice in the legacy data). Only end BEFORE
+        // start is rejected.
+        if ($startStored > $endStored) {
+            Session::flash('warning', 'Sluttiden får inte vara före starttiden (samma dag).');
             header('Location: ' . View::url('job', ['resid' => $resid]));
             return;
         }

@@ -99,9 +99,9 @@ final class ScheduleService
     }
 
     /**
-     * Week total. Invalid rows (zero or negative duration — legacy data
-     * contains e.g. starttime == endtime) contribute 0, never a negative
-     * amount. Such rows are flagged 'invalid' and block report submission.
+     * Week total. Zero-duration rows (cancelled visits) contribute 0 by
+     * nature; invalid rows (end before start) are clamped so they never
+     * subtract from the total — they also block report submission.
      */
     public function calculateWeekMinutes(array $bookings): int
     {
@@ -194,14 +194,15 @@ final class ScheduleService
     private function enrich(array $r, float $hourOffset): array
     {
         $minutes = $this->calculateBookingMinutes($r);
-        // Invalid working time (start == end, or end before start). Approved
-        // rows are locked and can no longer be corrected, so only rows with
+        // Invalid working time = END BEFORE START only. Zero duration
+        // (start == end) is a legitimate state — e.g. the customer
+        // cancelled the cleaning — and is reported as 0 h. Approved rows
+        // are locked and can no longer be corrected, so only rows with
         // is_pending < 2 are flagged; the flag blocks report submission.
-        $invalid = $minutes <= 0 && (int)$r['is_pending'] < 2;
+        $invalid = $minutes < 0 && (int)$r['is_pending'] < 2;
         $r['minutes']       = $minutes;
         $r['invalid']       = $invalid;
-        $r['invalid_reason'] = !$invalid ? null
-            : ($minutes === 0 ? 'Start- och sluttid är samma.' : 'Sluttiden är före starttiden.');
+        $r['invalid_reason'] = $invalid ? 'Sluttiden är före starttiden.' : null;
         $r['hours']         = TimeFormatter::formatHours(max(0, $minutes) / 60);
         $r['display_start'] = TimeFormatter::formatTime((int)$r['starttime'], $hourOffset);
         $r['display_end']   = TimeFormatter::formatTime((int)$r['endtime'], $hourOffset);
