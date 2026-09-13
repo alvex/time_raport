@@ -22,18 +22,25 @@ use App\Core\View;
     <?= View::e($day['heading']) ?><?= $day['isToday'] ? ' · idag' : '' ?>
   </h2>
   <?php foreach ($day['bookings'] as $b): ?>
-  <a class="card job-card" href="<?= View::e(View::url('job', ['resid' => $b['resid']])) ?>">
-    <div class="job-row">
-      <div class="job-time"><?= View::e($b['display_start']) ?>–<?= View::e($b['display_end']) ?></div>
-      <span class="badge <?= View::e(View::badgeClass($b['status'])) ?>"><?= View::e($b['status']) ?></span>
+  <div class="card job-card">
+    <a class="job-main" href="<?= View::e(View::url('job', ['resid' => $b['resid']])) ?>">
+      <div class="job-row">
+        <div class="job-time"><?= View::e($b['display_start']) ?>–<?= View::e($b['display_end']) ?></div>
+        <span class="badge <?= View::e(View::badgeClass($b['status'])) ?>"><?= View::e($b['status']) ?></span>
+      </div>
+      <div class="job-customer"><?= View::e($b['customer']) ?></div>
+      <?php if ($b['display_address'] !== ''): ?>
+      <div class="job-address">📍 <?= View::e($b['display_address']) ?><?= $b['display_city'] !== '' ? ', ' . View::e($b['display_city']) : '' ?></div>
+      <?php endif; ?>
+      <div class="job-hours"><?= View::e($b['hours']) ?> h<?php if ($b['old_hours_disp'] !== null && $b['old_hours_disp'] !== $b['hours']): ?>
+        <span class="job-oldhours">(bokat: <?= View::e($b['old_hours_disp']) ?> h)</span><?php endif; ?></div>
+    </a>
+    <?php if ($b['maps_url'] !== null): ?>
+    <div class="job-actions">
+      <a class="btn btn-maps" href="<?= View::e($b['maps_url']) ?>" target="_blank" rel="noopener">🧭 Vägbeskrivning</a>
     </div>
-    <div class="job-customer"><?= View::e($b['customer']) ?></div>
-    <?php if ($b['display_address'] !== ''): ?>
-    <div class="job-address"><?= View::e($b['display_address']) ?><?= $b['display_city'] !== '' ? ', ' . View::e($b['display_city']) : '' ?></div>
     <?php endif; ?>
-    <div class="job-hours"><?= View::e($b['hours']) ?> h<?php if ($b['old_hours_disp'] !== null && $b['old_hours_disp'] !== $b['hours']): ?>
-      <span class="job-oldhours">(bokat: <?= View::e($b['old_hours_disp']) ?> h)</span><?php endif; ?></div>
-  </a>
+  </div>
   <?php endforeach; ?>
 <?php endforeach; ?>
 

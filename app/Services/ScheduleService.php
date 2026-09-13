@@ -163,6 +163,27 @@ final class ScheduleService
         return $row === null ? null : $this->enrich($row, $hourOffset);
     }
 
+    /**
+     * Google Maps directions URL for a customer address, or null when the
+     * address is unusable (empty or no letters/digits — legacy rows can
+     * hold "," or "."). City alone is not a destination; it is only
+     * appended to a real street address. The inputs are expected to be
+     * View::text()-normalized already (å/ä/ö, UTF-8-in-latin1 and HTML
+     * entities resolved), so rawurlencode() gets clean UTF-8.
+     * No coordinates are fetched or stored — Google Maps uses the
+     * device's own position as the starting point.
+     */
+    public static function mapsUrl(string $address, string $city): ?string
+    {
+        $address = trim($address, " \t,.");
+        if ($address === '' || !preg_match('/[\p{L}\d]/u', $address)) {
+            return null;
+        }
+        $city = trim($city, " \t,.");
+        $destination = $city === '' ? $address : $address . ', ' . $city;
+        return 'https://www.google.com/maps/dir/?api=1&destination=' . rawurlencode($destination);
+    }
+
     /** Attach display fields to a raw booking row. */
     private function enrich(array $r, float $hourOffset): array
     {
@@ -177,6 +198,7 @@ final class ScheduleService
         $r['display_address'] = trim(View::text($r['address']), " \t,");
         $r['display_city']  = View::text($r['city']);
         $r['comment']       = View::text($r['summary']);
+        $r['maps_url']      = self::mapsUrl($r['display_address'], $r['display_city']);
         $r['old_hours_disp'] = ($r['old_hours'] !== null && (float)$r['old_hours'] > 0)
             ? TimeFormatter::formatHours((float)$r['old_hours'])
             : null;

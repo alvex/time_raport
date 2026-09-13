@@ -92,6 +92,20 @@ a.card:active, a.card:hover { border-color: var(--hf-blue); }
 .job-oldhours { color: var(--ink-soft); font-weight: 400; font-size: 13px; margin-left: 6px; }
 .job-next { border-left: 4px solid var(--hf-blue); }
 
+/* Card split into a link area + action row (a button may not live inside
+   an <a>, and directions must be clearly separated from report actions). */
+.job-card:has(.job-actions) { padding-block-end: 10px; }
+.job-main { display: block; color: inherit; text-decoration: none;
+  margin: -14px -16px 0; padding: 14px 16px 10px; border-radius: var(--radius) var(--radius) 0 0; }
+.job-main:active, .job-main:hover { background: #f7f9fc; }
+.job-actions { border-top: 1px solid var(--line); padding-top: 10px; }
+.btn-maps {
+  width: 100%; min-height: 44px; padding: 8px 12px;
+  background: #eef4fb; color: var(--hf-blue); border: 1px solid var(--hf-blue);
+  font-size: 15px;
+}
+.btn-maps:active, .btn-maps:hover { background: var(--hf-blue); color: #fff; }
+
 /* Stats */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 8px; }
 .stat-card {
