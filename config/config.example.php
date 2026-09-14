@@ -17,8 +17,8 @@ return [
     'db_pass'     => '',
 
     // Where submitted week reports are sent (legacy: $conf['app']['jobbEmail']).
-    'jobb_email'  => 'jobb@hemfresh.se',
-    'mail_from'   => 'jobb@hemfresh.se',
+    'jobb_email'  => 'info@hemfresh.se',
+    'mail_from'   => 'info@hemfresh.se',
     'mail_from_name' => 'HemFresh TimeRapport',
 
     // 'log' = write emails to storage/mail/ instead of sending (dev default).

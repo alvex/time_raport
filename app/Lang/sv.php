@@ -68,6 +68,8 @@ return [
     // Vägbeskrivning
     'maps.start'            => 'Starta vägbeskrivning',
     'maps.short'            => 'Vägbeskrivning',
+    'maps.navigate'         => 'Starta navigation',
+    'key.exists'            => 'Nyckel finns',
 
     // Jobbdetalj
     'job.address'           => 'Adress',

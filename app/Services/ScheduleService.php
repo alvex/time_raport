@@ -190,7 +190,7 @@ final class ScheduleService
      * No coordinates are fetched or stored — Google Maps uses the
      * device's own position as the starting point.
      */
-    public static function mapsUrl(string $address, string $city): ?string
+    public static function mapsUrl(string $address, string $city, ?string $travelmode = null): ?string
     {
         $address = trim($address, " \t,.");
         if ($address === '' || !preg_match('/[\p{L}\d]/u', $address)) {
@@ -198,7 +198,12 @@ final class ScheduleService
         }
         $city = trim($city, " \t,.");
         $destination = $city === '' ? $address : $address . ', ' . $city;
-        return 'https://www.google.com/maps/dir/?api=1&destination=' . rawurlencode($destination);
+        $url = 'https://www.google.com/maps/dir/?api=1&destination=' . rawurlencode($destination);
+        // Whitelisted Google Maps travel modes only.
+        if (in_array($travelmode, ['driving', 'walking', 'bicycling', 'transit'], true)) {
+            $url .= '&travelmode=' . $travelmode;
+        }
+        return $url;
     }
 
     /** Attach display fields to a raw booking row. */
@@ -229,6 +234,8 @@ final class ScheduleService
         $r['display_city']  = View::text($r['city']);
         $r['comment']       = View::text($r['summary']);
         $r['maps_url']      = self::mapsUrl($r['display_address'], $r['display_city']);
+        // Dashboard's "Starta navigation": same destination, car mode preset.
+        $r['maps_url_driving'] = self::mapsUrl($r['display_address'], $r['display_city'], 'driving');
         $r['old_hours_disp'] = ($r['old_hours'] !== null && (float)$r['old_hours'] > 0)
             ? TimeFormatter::formatHours((float)$r['old_hours'])
             : null;

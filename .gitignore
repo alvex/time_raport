@@ -2,3 +2,4 @@
 /config/config.php
 *.png
 Thumbs.db
+/config/config_prod.php
