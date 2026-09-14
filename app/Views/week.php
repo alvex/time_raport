@@ -4,6 +4,7 @@ use App\Core\View;
 $tr_pin  = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 $tr_nav  = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c0-4 3-7 8-7h5"/><path d="M13 5.5 17.5 10 13 14.5"/></svg>';
 $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2.6 22.6 20.4a1 1 0 0 1-.86 1.5H2.26a1 1 0 0 1-.86-1.5L12 2.6z"/><path d="M12 9v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="#fff"/></svg>';
+$tr_key  = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2m-3.5 3.5 3 3M14 9l2.5 2.5"/></svg>';
 ?>
 <?php if (!empty($notice)): ?><div class="alert alert-notice"><?= View::e($notice) ?></div><?php endif; ?>
 <?php if (!empty($warning)): ?><div class="alert alert-warning"><?= View::e($warning) ?></div><?php endif; ?>
@@ -43,11 +44,16 @@ $tr_warn = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" 
         </div>
         <span class="badge <?= View::e(View::badgeClass($b['status_key'])) ?>"><?= View::e(t('status.' . $b['status_key'])) ?></span>
       </div>
-      <div class="job-customer"><?php View::partial('customer', ['b' => $b]); ?></div>
+      <div class="job-customer"><?php View::partial('customer', ['b' => $b, 'nameOnly' => $b['has_key']]); ?></div>
       <?php if ($b['display_address'] !== ''): ?>
       <div class="job-address">
         <span class="job-pin"><?= $tr_pin ?></span>
         <span><?= View::e($b['display_address']) ?><?php if ($b['display_city'] !== ''): ?><br><?= View::e($b['display_city']) ?><?php endif; ?></span>
+      </div>
+      <?php endif; ?>
+      <?php if ($b['has_key']): ?>
+      <div class="key-line"><?= $tr_key ?>
+        <span><?= View::e(t('key.exists')) ?> · <?= View::e(t('common.customer_no')) ?>: <?= View::e($b['customer_no']) ?></span>
       </div>
       <?php endif; ?>
     </a>
