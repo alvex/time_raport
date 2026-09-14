@@ -68,7 +68,6 @@ return [
     // Indicaciones
     'maps.start'            => 'Iniciar navegación',
     'maps.short'            => 'Cómo llegar',
-    'maps.navigate'         => 'Iniciar navegación',
     'key.exists'            => 'Llave disponible',
 
     // Detalle del trabajo

@@ -45,7 +45,7 @@ $tr_nav = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="c
     <?php if ($job['maps_url_driving'] !== null): ?>
     <div class="job-actions">
       <a class="btn btn-maps" href="<?= View::e($job['maps_url_driving']) ?>" target="_blank" rel="noopener noreferrer">
-        <?= $tr_nav ?> <?= View::e(t('maps.navigate')) ?>
+        <?= $tr_nav ?> <?= View::e(t('maps.start')) ?>
       </a>
     </div>
     <?php endif; ?>
