@@ -140,7 +140,7 @@ foreach (['sv', 'es', 'ru'] as $l) {
         'week' => fn() => View::render('week', ['week' => $week, 'prevWeek' => '2026-W36', 'nextWeek' => '2026-W38', 'currentWeek' => $schedule->currentIsoWeek(), 'notice' => null, 'warning' => null]),
         'job' => fn() => View::render('job', ['b' => $week['bookings'][0], 'backWeek' => '2026-W37', 'notice' => null, 'warning' => null]),
         'report_preview' => fn() => View::render('report_preview', ['report' => $week, 'onceToken' => 'tok', 'notice' => null, 'warning' => null]),
-        'history' => fn() => View::render('history', ['weeks' => $reports->deriveHistory($machid, 0.0, 12), 'notice' => null, 'warning' => null]),
+        'history' => fn() => View::render('history', ['month' => $reports->monthSummary($machid, '2026-09'), 'weeks' => $reports->deriveHistory($machid, 0.0, 12), 'notice' => null, 'warning' => null]),
         'error' => fn() => View::render('error', ['title' => t('err.404_title'), 'message' => t('err.404_msg')]),
     ];
     foreach ($pages as $name => $fn) {
@@ -160,6 +160,19 @@ $check('tider/totaler identiska sv↔es↔ru',
     && $nums($renders['sv']['week']) === $nums($renders['ru']['week']));
 $check('rapportmailets veckoetikett förblir svensk',
     $schedule->weekRangeLabel('2026-W37', 'sv') === '7–13 september 2026');
+$check('månadsetikett lokaliserad (sv/es/ru)',
+    str_contains($renders['sv']['history'], 'September 2026')
+    && str_contains($renders['es']['history'], 'Septiembre 2026')
+    && str_contains($renders['ru']['history'], 'Сентябрь 2026'));
+$monthHours = function (string $html): ?string {
+    return preg_match('/class="month-hours">([^<]+)</u', $html, $m) ? trim($m[1]) : null;
+};
+$monthNum = fn(?string $s) => $s === null ? null : preg_replace('/[^0-9.]/', '', $s);
+$check('månadssumma identisk sv↔es↔ru',
+    $monthNum($monthHours($renders['sv']['history'])) !== null
+    && $monthNum($monthHours($renders['sv']['history'])) !== ''
+    && $monthNum($monthHours($renders['sv']['history'])) === $monthNum($monthHours($renders['es']['history']))
+    && $monthNum($monthHours($renders['sv']['history'])) === $monthNum($monthHours($renders['ru']['history'])));
 Translator::persist('sv');
 
 file_put_contents(sys_get_temp_dir() . '/tr_week_ru.html', $renders['ru']['week']);

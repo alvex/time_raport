@@ -118,6 +118,18 @@ return [
     'hist.sub'              => 'Senaste 12 veckorna',
     'hist.none'             => 'Inga jobb de senaste 12 veckorna.',
 
+    // Historik: månadsöversikt
+    'hist.month_title'      => 'Månadsöversikt',
+    'hist.month_prev'       => 'Föregående månad',
+    'hist.month_next'       => 'Nästa månad',
+    'hist.month_current'    => 'Till denna månad',
+    'hist.month_booked'     => 'Bokade timmar',
+    'hist.month_basis'      => 'Bokad (schemalagd) tid, oavsett rapportstatus.',
+    'hist.month_empty'      => 'Inga pass den valda månaden.',
+    'hist.month_label'      => 'Månad',
+    'hist.year_label'       => 'År',
+    'hist.month_show'       => 'Visa',
+
     // Fel
     'err.404_title'         => 'Sidan finns inte',
     'err.404_msg'           => 'Sidan du försökte nå finns inte.',
@@ -138,6 +150,13 @@ return [
     'date.month.4'  => 'april',    'date.month.5'  => 'maj',      'date.month.6'  => 'juni',
     'date.month.7'  => 'juli',     'date.month.8'  => 'augusti',  'date.month.9'  => 'september',
     'date.month.10' => 'oktober',  'date.month.11' => 'november', 'date.month.12' => 'december',
+    // Fristående månadsnamn (rubriker/väljare) — versal begynnelsebokstav
+    'date.month_standalone.1'  => 'Januari',  'date.month_standalone.2'  => 'Februari',
+    'date.month_standalone.3'  => 'Mars',     'date.month_standalone.4'  => 'April',
+    'date.month_standalone.5'  => 'Maj',      'date.month_standalone.6'  => 'Juni',
+    'date.month_standalone.7'  => 'Juli',     'date.month_standalone.8'  => 'Augusti',
+    'date.month_standalone.9'  => 'September', 'date.month_standalone.10' => 'Oktober',
+    'date.month_standalone.11' => 'November', 'date.month_standalone.12' => 'December',
 
     // Enheter (plural)
     'unit.hours.one'        => 'timme',

@@ -183,6 +183,60 @@ final class ReportService
     }
 
     /**
+     * Monthly hours summary for the history page. Read-only.
+     *
+     * Same basis as the weekly history totals: every non-blackout
+     * booking for the authenticated resource, regardless of report
+     * status (draft/submitted/approved all count). The sum is BOOKED
+     * (scheduled) time — (endtime − starttime)/60 from the raw stored
+     * minute columns, negative (invalid) rows clamped to 0 exactly like
+     * calculateWeekMinutes — not actual check-in/check-out time, which
+     * this system does not record. The display hourOffset shifts start
+     * AND end equally, so durations are offset-independent.
+     *
+     * The month window is bookings with start_date in
+     * [first day 00:00, first day of next month 00:00) — see
+     * BookingRepository::findDurationsForResourceStartingIn (no JOIN,
+     * each booking counted exactly once).
+     */
+    public function monthSummary(string $machid, string $month): array
+    {
+        $bounds = $this->schedule->monthBounds($month);
+        $rows = $this->bookings->findDurationsForResourceStartingIn($machid, $bounds['start'], $bounds['end']);
+        $minutes = $this->schedule->calculateWeekMinutes($rows);
+        [$year, $num] = sscanf($month, '%d-%d');
+        return [
+            'month'        => $month,
+            'yearNum'      => $year,
+            'monthNum'     => $num,
+            'label'        => $this->schedule->monthLabel($month),
+            'jobCount'     => count($rows),
+            'totalMinutes' => $minutes,
+            'totalHours'   => TimeFormatter::formatHours($minutes / 60),
+            'prevMonth'    => $this->schedule->adjacentMonth($month, -1),
+            'nextMonth'    => $this->schedule->adjacentMonth($month, 1),
+            'isCurrent'    => $month === $this->schedule->currentMonth(),
+            'years'        => $this->yearOptions($machid, $year),
+        ];
+    }
+
+    /**
+     * Year options for the month picker, newest first: the resource's
+     * own booking span, always including the current and the selected
+     * year so the select can mirror any valid URL state.
+     */
+    private function yearOptions(string $machid, int $selectedYear): array
+    {
+        $span = $this->bookings->startDateSpan($machid);
+        $cur = (int)date('Y');
+        $min = $span !== null ? (int)date('Y', $span['min']) : $cur;
+        $max = $span !== null ? (int)date('Y', $span['max']) : $cur;
+        $min = max(2000, min($min, $cur, $selectedYear));
+        $max = min(2100, max($max, $cur, $selectedYear));
+        return range($max, $min);
+    }
+
+    /**
      * The report email: same information as the legacy preview table
      * (templates/resources.template.php:261) — date, customer, address,
      * hours (with original hours when adjusted), comment, week total —

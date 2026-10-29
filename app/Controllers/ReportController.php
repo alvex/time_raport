@@ -84,8 +84,23 @@ final class ReportController
     {
         $machid = Auth::id();
         $reports = new ReportService();
+        $schedule = new ScheduleService();
+
+        // Month selection: canonical ?month=YYYY-MM (prev/next links),
+        // or month_y + month_m from the no-JS picker form. Anything
+        // invalid or manipulated silently falls back to the current
+        // month (Europe/Stockholm) — never an error page.
+        $raw = $_GET['month'] ?? null;
+        if (!is_string($raw)
+            && isset($_GET['month_y'], $_GET['month_m'])
+            && is_string($_GET['month_y']) && is_string($_GET['month_m'])) {
+            $raw = sprintf('%04d-%02d', (int)$_GET['month_y'], (int)$_GET['month_m']);
+        }
+        $month = $schedule->normalizeMonth(is_string($raw) ? $raw : null)
+            ?? $schedule->currentMonth();
 
         View::render('history', [
+            'month'   => $reports->monthSummary($machid, $month),
             'weeks'   => $reports->deriveHistory($machid, Auth::hourOffset(), 12),
             'notice'  => Session::getFlash('notice'),
             'warning' => Session::getFlash('warning'),

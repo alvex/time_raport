@@ -44,6 +44,43 @@ final class BookingRepository
         return $stmt->fetchAll();
     }
 
+    /**
+     * Raw durations for the monthly summary: bookings whose start_date
+     * falls in [startTs, endTsExclusive). Half-open on start_date only —
+     * month boundaries never double-count a booking the way an end_date
+     * bound could. Reads cal_reservations alone (no JOIN), so every
+     * booking is counted exactly once regardless of customer rows.
+     */
+    public function findDurationsForResourceStartingIn(string $machid, int $startTs, int $endTsExclusive): array
+    {
+        $sql = "SELECT res.resid, res.starttime, res.endtime, res.is_pending
+                FROM cal_reservations res
+                WHERE res.machid = ?
+                  AND res.start_date >= ? AND res.start_date < ?
+                  AND res.is_blackout <> 1";
+        $stmt = Database::get()->prepare($sql);
+        $stmt->execute([$machid, $startTs, $endTsExclusive]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * First/last booking start_date for a resource (year range for the
+     * history month picker), or null when the resource has no bookings.
+     */
+    public function startDateSpan(string $machid): ?array
+    {
+        $sql = "SELECT MIN(start_date) AS min_ts, MAX(start_date) AS max_ts
+                FROM cal_reservations
+                WHERE machid = ? AND is_blackout <> 1";
+        $stmt = Database::get()->prepare($sql);
+        $stmt->execute([$machid]);
+        $row = $stmt->fetch();
+        if ($row === false || $row['min_ts'] === null) {
+            return null;
+        }
+        return ['min' => (int)$row['min_ts'], 'max' => (int)$row['max_ts']];
+    }
+
     public function findOneForResource(string $resid, string $machid): ?array
     {
         $sql = self::SELECT_BOOKING . "

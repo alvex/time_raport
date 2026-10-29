@@ -118,6 +118,18 @@ return [
     'hist.sub'              => 'Últimas 12 semanas',
     'hist.none'             => 'No hay trabajos en las últimas 12 semanas.',
 
+    // Historial: resumen mensual
+    'hist.month_title'      => 'Resumen mensual',
+    'hist.month_prev'       => 'Mes anterior',
+    'hist.month_next'       => 'Mes siguiente',
+    'hist.month_current'    => 'Ir a este mes',
+    'hist.month_booked'     => 'Horas reservadas',
+    'hist.month_basis'      => 'Tiempo reservado (programado), independientemente del estado del informe.',
+    'hist.month_empty'      => 'No hay turnos en el mes seleccionado.',
+    'hist.month_label'      => 'Mes',
+    'hist.year_label'       => 'Año',
+    'hist.month_show'       => 'Mostrar',
+
     // Errores
     'err.404_title'         => 'Página no encontrada',
     'err.404_msg'           => 'La página que intentó abrir no existe.',
@@ -138,6 +150,13 @@ return [
     'date.month.4'  => 'abril',   'date.month.5'  => 'mayo',      'date.month.6'  => 'junio',
     'date.month.7'  => 'julio',   'date.month.8'  => 'agosto',    'date.month.9'  => 'septiembre',
     'date.month.10' => 'octubre', 'date.month.11' => 'noviembre', 'date.month.12' => 'diciembre',
+    // Nombres de mes independientes (títulos/selector)
+    'date.month_standalone.1'  => 'Enero',      'date.month_standalone.2'  => 'Febrero',
+    'date.month_standalone.3'  => 'Marzo',      'date.month_standalone.4'  => 'Abril',
+    'date.month_standalone.5'  => 'Mayo',       'date.month_standalone.6'  => 'Junio',
+    'date.month_standalone.7'  => 'Julio',      'date.month_standalone.8'  => 'Agosto',
+    'date.month_standalone.9'  => 'Septiembre', 'date.month_standalone.10' => 'Octubre',
+    'date.month_standalone.11' => 'Noviembre',  'date.month_standalone.12' => 'Diciembre',
 
     // Unidades (plural)
     'unit.hours.one'        => 'hora',

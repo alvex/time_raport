@@ -40,6 +40,22 @@ assert($svc->adjacentWeek('2026-W01', -1) === '2025-W52');   // 2025 has 52 ISO 
 $b = $svc->weekBounds('2026-W37');
 assert(date('Y-m-d D', $b['start']) === '2026-09-07 Mon');
 assert(date('Y-m-d D', $b['end']) === '2026-09-13 Sun');
+
+// Month math (history monthly summary)
+assert($svc->normalizeMonth('2026-10') === '2026-10');
+assert($svc->normalizeMonth('2026-13') === null);
+assert($svc->normalizeMonth('1999-05') === null);
+assert($svc->normalizeMonth('banan') === null);
+assert($svc->normalizeMonth(null) === null);
+assert($svc->adjacentMonth('2026-01', -1) === '2025-12');             // year boundary
+assert($svc->adjacentMonth('2026-12', 1) === '2027-01');
+$mb = $svc->monthBounds('2026-10');                                   // DST ends 2026-10-25
+assert(date('Y-m-d H:i', $mb['start']) === '2026-10-01 00:00');
+assert(date('Y-m-d H:i', $mb['end']) === '2026-11-01 00:00');
+assert(($mb['end'] - $mb['start']) === 31 * 86400 + 3600);            // +1h: October has the extra DST hour
+$mb = $svc->monthBounds('2024-02');                                   // leap year
+assert(date('Y-m-d H:i', $mb['end']) === '2024-03-01 00:00');
+assert($svc->monthLabel('2026-10', 'sv') === 'Oktober 2026');
 echo "Unit asserts: OK\n\n";
 
 // ---- live comparison --------------------------------------------------

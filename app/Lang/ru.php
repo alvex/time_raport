@@ -121,6 +121,18 @@ return [
     'hist.sub'              => 'Последние 12 недель',
     'hist.none'             => 'За последние 12 недель заданий нет.',
 
+    // История: сводка за месяц
+    'hist.month_title'      => 'Сводка за месяц',
+    'hist.month_prev'       => 'Предыдущий месяц',
+    'hist.month_next'       => 'Следующий месяц',
+    'hist.month_current'    => 'К текущему месяцу',
+    'hist.month_booked'     => 'Забронированные часы',
+    'hist.month_basis'      => 'Забронированное (запланированное) время, независимо от статуса отчёта.',
+    'hist.month_empty'      => 'В выбранном месяце нет смен.',
+    'hist.month_label'      => 'Месяц',
+    'hist.year_label'       => 'Год',
+    'hist.month_show'       => 'Показать',
+
     // Ошибки
     'err.404_title'         => 'Страница не найдена',
     'err.404_msg'           => 'Страница, которую вы пытались открыть, не существует.',
@@ -141,6 +153,13 @@ return [
     'date.month.4'  => 'апреля',   'date.month.5'  => 'мая',     'date.month.6'  => 'июня',
     'date.month.7'  => 'июля',     'date.month.8'  => 'августа', 'date.month.9'  => 'сентября',
     'date.month.10' => 'октября',  'date.month.11' => 'ноября',  'date.month.12' => 'декабря',
+    // Самостоятельные названия месяцев (заголовки/выбор) — именительный падеж
+    'date.month_standalone.1'  => 'Январь',   'date.month_standalone.2'  => 'Февраль',
+    'date.month_standalone.3'  => 'Март',     'date.month_standalone.4'  => 'Апрель',
+    'date.month_standalone.5'  => 'Май',      'date.month_standalone.6'  => 'Июнь',
+    'date.month_standalone.7'  => 'Июль',     'date.month_standalone.8'  => 'Август',
+    'date.month_standalone.9'  => 'Сентябрь', 'date.month_standalone.10' => 'Октябрь',
+    'date.month_standalone.11' => 'Ноябрь',   'date.month_standalone.12' => 'Декабрь',
 
     // Единицы (множественное число)
     'unit.hours.one'        => 'час',

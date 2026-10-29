@@ -76,6 +76,65 @@ final class ScheduleService
         return (int)substr($isoWeek, 6);
     }
 
+    /** "2026-10" for today (Europe/Stockholm via bootstrap). */
+    public function currentMonth(): string
+    {
+        return date('Y-m');
+    }
+
+    /** Validate and normalize a month id like "2026-10"; null if invalid. */
+    public function normalizeMonth(?string $month): ?string
+    {
+        if ($month === null || !preg_match('/^(\d{4})-(\d{2})$/', $month, $m)) {
+            return null;
+        }
+        $year = (int)$m[1];
+        $num = (int)$m[2];
+        if ($year < 2000 || $year > 2100 || $num < 1 || $num > 12) {
+            return null;
+        }
+        return sprintf('%04d-%02d', $year, $num);
+    }
+
+    /**
+     * Month bounds as unix timestamps: first day 00:00 inclusive and
+     * first day of the NEXT month 00:00 exclusive (half-open interval —
+     * month/year boundaries and DST shifts come out exactly right).
+     */
+    public function monthBounds(string $month): array
+    {
+        [$year, $num] = sscanf($month, '%d-%d');
+        $first = (new DateTimeImmutable('now', new DateTimeZone('Europe/Stockholm')))
+            ->setDate($year, $num, 1)
+            ->setTime(0, 0, 0);
+        return [
+            'start' => $first->getTimestamp(),
+            'end'   => $first->modify('first day of next month')->getTimestamp(),
+        ];
+    }
+
+    public function adjacentMonth(string $month, int $delta): string
+    {
+        [$year, $num] = sscanf($month, '%d-%d');
+        $d = (new DateTimeImmutable('now', new DateTimeZone('Europe/Stockholm')))
+            ->setDate($year, $num, 1)
+            ->setTime(0, 0, 0)
+            ->modify(($delta >= 0 ? '+' : '') . $delta . ' months');
+        return $d->format('Y-m');
+    }
+
+    /**
+     * Localized standalone month label, e.g. "Oktober 2026" /
+     * "Octubre 2026" / "Октябрь 2026". Uses date.month_standalone.* —
+     * the date.month.* names are inflected for in-date use (Russian
+     * genitive) and would be wrong on their own.
+     */
+    public function monthLabel(string $month, ?string $locale = null): string
+    {
+        [$year, $num] = sscanf($month, '%d-%d');
+        return t("date.month_standalone.$num", [], $locale) . ' ' . $year;
+    }
+
     /**
      * Localized week range label, e.g. "7–13 september 2026" (sv),
      * "7–13 de septiembre de 2026" (es), "7–13 сентября 2026" (ru).
