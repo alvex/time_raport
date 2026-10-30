@@ -60,6 +60,36 @@ final class TimeFormatter
     }
 
     /**
+     * Short localized date for compact rows, e.g. "Mån 26 okt".
+     * Abbreviations are the first three letters of the localized day and
+     * month names — correct for Swedish and readable in es/ru, with no
+     * extra language keys.
+     */
+    public static function formatShortDate(int $ts, ?string $locale = null): string
+    {
+        $day = mb_substr(t('date.day.' . (int)date('w', $ts), [], $locale), 0, 3);
+        $month = mb_substr(t('date.month.' . (int)date('n', $ts), [], $locale), 0, 3);
+        return $day . ' ' . (int)date('j', $ts) . ' ' . $month;
+    }
+
+    /**
+     * Heading for TODAY, with weekday, full date and year, e.g.
+     * "Idag: torsdag den 29 oktober 2026" / "Hoy: jueves 29 de octubre
+     * de 2026" / "Сегодня: четверг, 29 октября 2026". The day name is
+     * lowercased because it stands mid-sentence after the "Today:" label.
+     */
+    public static function formatTodayHeading(int $ts, ?string $locale = null): string
+    {
+        $day = t('date.day.' . (int)date('w', $ts), [], $locale);
+        return t('date.today_heading', [
+            'day'   => mb_strtolower(mb_substr($day, 0, 1)) . mb_substr($day, 1),
+            'd'     => (int)date('j', $ts),
+            'month' => t('date.month.' . (int)date('n', $ts), [], $locale),
+            'year'  => date('Y', $ts),
+        ], $locale);
+    }
+
+    /**
      * Localized day heading, e.g. "Måndag 7 september" / "Lunes 7 de
      * septiembre" / "Понедельник, 7 сентября". Names and pattern come
      * from the language files (no intl dependency).

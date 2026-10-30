@@ -9,15 +9,15 @@ use App\Core\View;
 <title><?= View::e($title ?? t('err.default_title')) ?> – HemFresh TimeRapport</title>
 <link rel="stylesheet" href="assets/app.css?v=<?= (int)@filemtime(TR_ROOT . '/assets/app.css') ?>">
 </head>
-<body class="login-page">
+<body class="hf login-page">
 <main class="login-card">
-  <h1 class="login-brand"><span class="brand-hem">Hem</span><span class="brand-fresh">Fresh</span></h1>
+  <h1 class="login-brand"><img class="login-logo" src="images/hemfresh_logo.png" alt="HemFresh"></h1>
   <p class="login-sub">TimeRapport</p>
   <div class="alert alert-warning">
     <strong><?= View::e($title ?? t('err.generic_title')) ?></strong><br>
     <?= View::e($message ?? t('err.generic_msg')) ?>
   </div>
-  <a class="btn btn-primary btn-block" href="index.php"><?= View::e(t('common.home')) ?></a>
+  <a class="hf-btn hf-btn--primary hf-btn--block" href="index.php"><?= View::e(t('common.home')) ?></a>
 </main>
 </body>
 </html>

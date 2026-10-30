@@ -165,9 +165,9 @@ $check('månadsetikett lokaliserad (sv/es/ru)',
     && str_contains($renders['es']['history'], 'Septiembre 2026')
     && str_contains($renders['ru']['history'], 'Сентябрь 2026'));
 $monthHours = function (string $html): ?string {
-    return preg_match('/class="month-hours">([^<]+)</u', $html, $m) ? trim($m[1]) : null;
+    return preg_match('/class="hf-result__value">([^<]+)</u', $html, $m) ? trim($m[1]) : null;
 };
-$monthNum = fn(?string $s) => $s === null ? null : preg_replace('/[^0-9.]/', '', $s);
+$monthNum = fn(?string $s) => $s === null ? null : preg_replace('/[^0-9.,]/', '', $s);
 $check('månadssumma identisk sv↔es↔ru',
     $monthNum($monthHours($renders['sv']['history'])) !== null
     && $monthNum($monthHours($renders['sv']['history'])) !== ''

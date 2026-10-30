@@ -52,6 +52,9 @@ final class ScheduleController
         View::render('job', [
             'b'       => $booking,
             'backWeek'=> date('o', (int)$booking['start_date']) . '-W' . date('W', (int)$booking['start_date']),
+            // Kom användaren från tidrapporten ("Justera tid") leder
+            // tillbaka-länken dit i stället för till veckovyn.
+            'fromReport' => ($_GET['from'] ?? '') === 'report',
             'notice'  => Session::getFlash('notice'),
             'warning' => Session::getFlash('warning'),
         ]);
@@ -69,6 +72,12 @@ final class ScheduleController
         $machid = Auth::id();
         $offset = Auth::hourOffset();
         $resid = (string)($_POST['resid'] ?? '');
+        // Ursprunget (tidrapporten) följer med genom POST → redirect så att
+        // tillbaka-länken pekar rätt även efter sparandet.
+        $backParams = ['resid' => $resid];
+        if (($_POST['from'] ?? '') === 'report') {
+            $backParams['from'] = 'report';
+        }
 
         $repo = new BookingRepository();
         $schedule = new ScheduleService($repo);
@@ -88,7 +97,7 @@ final class ScheduleController
             // is_pending = 0 condition is the final guard below anyway.
             Session::flash('warning', t((int)$booking['is_pending'] === 1
                 ? 'job.locked_submitted' : 'job.locked_approved'));
-            header('Location: ' . View::url('job', ['resid' => $resid]));
+            header('Location: ' . View::url('job', $backParams));
             return;
         }
 
@@ -98,7 +107,7 @@ final class ScheduleController
         if ($startDisp === null || $endDisp === null
             || $startDisp % 5 !== 0 || $endDisp % 5 !== 0) {
             Session::flash('warning', t('job.invalid_format'));
-            header('Location: ' . View::url('job', ['resid' => $resid]));
+            header('Location: ' . View::url('job', $backParams));
             return;
         }
 
@@ -110,7 +119,7 @@ final class ScheduleController
         // start is rejected.
         if ($startStored > $endStored) {
             Session::flash('warning', t('job.end_before_start'));
-            header('Location: ' . View::url('job', ['resid' => $resid]));
+            header('Location: ' . View::url('job', $backParams));
             return;
         }
 
@@ -128,6 +137,6 @@ final class ScheduleController
         } else {
             Session::flash('warning', t('job.update_failed'));
         }
-        header('Location: ' . View::url('job', ['resid' => $resid]));
+        header('Location: ' . View::url('job', $backParams));
     }
 }

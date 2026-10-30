@@ -101,7 +101,9 @@ final class ReportController
 
         View::render('history', [
             'month'   => $reports->monthSummary($machid, $month),
-            'weeks'   => $reports->deriveHistory($machid, Auth::hourOffset(), 12),
+            // Veckolistan följer månadsvalet: bara veckor som tillhör
+            // (överlappar) den visade månaden.
+            'weeks'   => $reports->deriveMonthHistory($machid, Auth::hourOffset(), $month),
             'notice'  => Session::getFlash('notice'),
             'warning' => Session::getFlash('warning'),
         ]);

@@ -41,8 +41,15 @@ return [
     'dash.report_label'     => 'отчёт',
     'dash.today_title'      => 'Сегодня',
     'dash.no_jobs_today'    => 'На сегодня заданий нет.',
-    'dash.week_schedule'    => 'Расписание недели',
+    'dash.week_schedule'    => 'Показать расписание всей недели',
     'dash.report_btn'       => 'Отчёт по часам',
+    'remind.friday'         => 'Не забудьте отправить отчёт по часам за эту неделю.',
+    'remind.cta'            => 'Отправить отчёт',
+
+    // Сводка и отличие от брони
+    'summary.aria'          => 'Сводка недели',
+    'diff.full'             => 'Время смены — {actual}. Забронированное время: {booked}.',
+    'diff.booked'           => 'Забронировано: {h}',
 
     // Недельный вид
     'week.title'            => 'Неделя {week}',
@@ -80,7 +87,9 @@ return [
     'job.save'              => 'Сохранить время',
     'job.hint_original'     => 'Изначально забронированные часы сохраняются и видны в отчёте.',
     'job.hint_cancelled'    => 'Смена отменена? Укажите одинаковое время начала и конца — будет отчитано 0 часов.',
+    'job.details'           => 'Подробнее',
     'job.back'              => 'Назад к неделе',
+    'job.back_report'       => 'Назад к отчёту по часам',
     'job.notfound_title'    => 'Задание не найдено',
     'job.notfound_msg'      => 'Бронирование не существует или принадлежит не вам.',
     'job.updated'           => 'Время обновлено.',
@@ -97,10 +106,17 @@ return [
     'report.h_customer'     => 'Клиент',
     'report.h_time'         => 'Время',
     'report.h_hours'        => 'Часы',
+    'report.adjust'         => 'Изменить время',
+    'report.adjust_short'   => 'Изменить',
+    'report.hint'           => 'Проверьте смены ниже. Перед отправкой отчёта нужно будет подтвердить.',
+    'report.review_title'   => 'Смены для проверки',
+    'report.submitted_btn'  => 'Отчёт отправлен',
+    'report.table_caption'  => 'Смены недели {week}',
+    'report.action_col'     => 'Действие',
     'report.total_label'    => 'Итого',
     'report.week_locked'    => 'Неделя утверждена и заблокирована.',
     'report.confirm_info'   => 'Проверьте строки выше. После отправки задания недели помечаются как отправленные, и отчёт уходит на утверждение.',
-    'report.submit'         => 'Отправить на утверждение',
+    'report.submit'         => 'Отправить отчёт за неделю {week}',
     'report.confirm_again'  => 'Вы уверены? Нажмите ещё раз для отправки',
     'report.none'           => 'На этой неделе нет заданий для отчёта.',
     'report.back'           => 'Назад к расписанию',
@@ -117,12 +133,13 @@ return [
     'report.blocked.other'  => 'Нужно исправить {n} смены, прежде чем отправить отчёт.',
 
     // История
-    'hist.title'            => 'Отчёты по часам',
-    'hist.sub'              => 'Последние 12 недель',
-    'hist.none'             => 'За последние 12 недель заданий нет.',
+    'hist.title'            => 'История',
+    'hist.weeks_in'         => 'Недели {month}',
+    'hist.week_empty'       => 'Нет смен',
 
     // История: сводка за месяц
-    'hist.month_title'      => 'Сводка за месяц',
+    'hist.month_title'      => 'Забронированные часы месяца',
+    'hist.month_pick'       => 'Выбрать другой месяц',
     'hist.month_prev'       => 'Предыдущий месяц',
     'hist.month_next'       => 'Следующий месяц',
     'hist.month_current'    => 'К текущему месяцу',
@@ -131,7 +148,7 @@ return [
     'hist.month_empty'      => 'В выбранном месяце нет смен.',
     'hist.month_label'      => 'Месяц',
     'hist.year_label'       => 'Год',
-    'hist.month_show'       => 'Показать',
+    'hist.month_show'       => 'Показать месяц',
 
     // Ошибки
     'err.404_title'         => 'Страница не найдена',
@@ -144,6 +161,7 @@ return [
 
     // Даты
     'date.day_heading'      => '{day}, {d} {month}',
+    'date.today_heading'    => 'Сегодня: {day}, {d} {month} {year}',
     'date.range_same'       => '{d1}–{d2} {month} {year}',
     'date.range_cross'      => '{d1} {m1} – {d2} {m2} {year}',
     'date.day.0'  => 'Воскресенье', 'date.day.1' => 'Понедельник', 'date.day.2' => 'Вторник',

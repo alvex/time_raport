@@ -183,6 +183,50 @@ final class ReportService
     }
 
     /**
+     * History for the weeks of ONE month, newest first: every ISO week
+     * that overlaps the month (a week spanning a month boundary belongs
+     * to both months). Same row shape as deriveHistory().
+     */
+    public function deriveMonthHistory(string $machid, float $hourOffset, string $month): array
+    {
+        $bounds = $this->schedule->monthBounds($month);
+        // Sista dagen i månaden, mitt på dagen — robust mot DST-skiften.
+        $lastDay = $bounds['end'] - 43200;
+        $firstWeek = date('o', $bounds['start']) . '-W' . date('W', $bounds['start']);
+        $lastWeek = date('o', $lastDay) . '-W' . date('W', $lastDay);
+
+        $start = $this->schedule->weekBounds($firstWeek)['start'];
+        $end = $this->schedule->weekBounds($lastWeek)['end'];
+        $rows = $this->bookings->findForResourceBetween($machid, $start, $end);
+        $buckets = [];
+        foreach ($rows as $r) {
+            $ts = (int)$r['start_date'];
+            $key = date('o', $ts) . '-W' . date('W', $ts);
+            $buckets[$key][] = $r;
+        }
+
+        $weeks = [];
+        $isoWeek = $lastWeek;
+        while (true) {
+            $bucket = $buckets[$isoWeek] ?? [];
+            $minutes = $this->schedule->calculateWeekMinutes($bucket);
+            $weeks[] = [
+                'isoWeek'    => $isoWeek,
+                'weekNumber' => $this->schedule->weekNumber($isoWeek),
+                'rangeLabel' => $this->schedule->weekRangeLabel($isoWeek),
+                'jobCount'   => count($bucket),
+                'totalHours' => TimeFormatter::formatHours($minutes / 60),
+                'status'     => self::weekStatus($bucket),
+            ];
+            if ($isoWeek === $firstWeek) {
+                break;
+            }
+            $isoWeek = $this->schedule->adjacentWeek($isoWeek, -1);
+        }
+        return $weeks;
+    }
+
+    /**
      * Monthly hours summary for the history page. Read-only.
      *
      * Same basis as the weekly history totals: every non-blackout

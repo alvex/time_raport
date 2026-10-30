@@ -10,9 +10,9 @@ use App\Core\View;
 <title><?= View::e(t('login.title')) ?> – HemFresh TimeRapport</title>
 <link rel="stylesheet" href="assets/app.css?v=<?= (int)@filemtime(TR_ROOT . '/assets/app.css') ?>">
 </head>
-<body class="login-page">
+<body class="hf login-page">
 <main class="login-card">
-  <h1 class="login-brand"><span class="brand-hem">Hem</span><span class="brand-fresh">Fresh</span></h1>
+  <h1 class="login-brand"><img class="login-logo" src="images/hemfresh_logo.png" alt="HemFresh"></h1>
   <p class="login-sub">TimeRapport</p>
 
   <?php if (!empty($error)): ?>
@@ -25,7 +25,7 @@ use App\Core\View;
     <input id="email" name="email" type="email" autocomplete="username" required autofocus>
     <label for="password"><?= View::e(t('login.password')) ?></label>
     <input id="password" name="password" type="password" autocomplete="current-password" required>
-    <button type="submit" class="btn btn-primary btn-block"><?= View::e(t('login.submit')) ?></button>
+    <button type="submit" class="hf-btn hf-btn--primary hf-btn--block"><?= View::e(t('login.submit')) ?></button>
   </form>
 
   <form method="post" action="<?= View::e(View::url('set_lang')) ?>" class="login-langs" aria-label="<?= View::e(t('lang.label')) ?>">

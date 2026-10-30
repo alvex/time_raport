@@ -40,8 +40,15 @@ return [
     'dash.report_label'     => 'informe',
     'dash.today_title'      => 'Hoy',
     'dash.no_jobs_today'    => 'No hay trabajos para hoy.',
-    'dash.week_schedule'    => 'Horario semanal',
+    'dash.week_schedule'    => 'Ver el horario de toda la semana',
     'dash.report_btn'       => 'Informe de horas',
+    'remind.friday'         => 'No olvides enviar el informe de horas de esta semana.',
+    'remind.cta'            => 'Enviar el informe',
+
+    // Resumen y diferencia con lo reservado
+    'summary.aria'          => 'Resumen de la semana',
+    'diff.full'             => 'El tiempo del turno es {actual}. Tiempo reservado: {booked}.',
+    'diff.booked'           => 'Tiempo reservado: {h}',
 
     // Vista semanal
     'week.title'            => 'Semana {week}',
@@ -79,7 +86,9 @@ return [
     'job.save'              => 'Guardar horario',
     'job.hint_original'     => 'Las horas reservadas originales se guardan y se muestran en el informe.',
     'job.hint_cancelled'    => '¿Se canceló el turno? Ponga la misma hora de inicio y de fin para reportar 0 horas.',
+    'job.details'           => 'Ver detalles',
     'job.back'              => 'Volver a la semana',
+    'job.back_report'       => 'Volver al informe de horas',
     'job.notfound_title'    => 'Trabajo no encontrado',
     'job.notfound_msg'      => 'La reserva no existe o no le pertenece.',
     'job.updated'           => 'El horario se ha actualizado.',
@@ -96,10 +105,17 @@ return [
     'report.h_customer'     => 'Cliente',
     'report.h_time'         => 'Horario',
     'report.h_hours'        => 'Horas',
+    'report.adjust'         => 'Ajustar horario',
+    'report.adjust_short'   => 'Ajustar',
+    'report.hint'           => 'Revise los turnos de abajo. Deberá confirmar antes de que se envíe el informe.',
+    'report.review_title'   => 'Turnos a revisar',
+    'report.submitted_btn'  => 'El informe está enviado',
+    'report.table_caption'  => 'Turnos de la semana {week}',
+    'report.action_col'     => 'Acción',
     'report.total_label'    => 'Total',
     'report.week_locked'    => 'La semana está aprobada y bloqueada.',
     'report.confirm_info'   => 'Revise las líneas de arriba. Al enviar, los trabajos de la semana se marcan como enviados y el informe pasa a aprobación.',
-    'report.submit'         => 'Enviar para aprobación',
+    'report.submit'         => 'Enviar informe de la semana {week}',
     'report.confirm_again'  => '¿Está seguro? Pulse otra vez para enviar',
     'report.none'           => 'No hay trabajos que reportar esta semana.',
     'report.back'           => 'Volver al horario',
@@ -114,12 +130,13 @@ return [
     'report.blocked.other'  => '{n} turnos deben corregirse antes de poder enviar el informe.',
 
     // Historial
-    'hist.title'            => 'Informes de horas',
-    'hist.sub'              => 'Últimas 12 semanas',
-    'hist.none'             => 'No hay trabajos en las últimas 12 semanas.',
+    'hist.title'            => 'Historial',
+    'hist.weeks_in'         => 'Semanas de {month}',
+    'hist.week_empty'       => 'Sin turnos',
 
     // Historial: resumen mensual
-    'hist.month_title'      => 'Resumen mensual',
+    'hist.month_title'      => 'Horas reservadas del mes',
+    'hist.month_pick'       => 'Elegir otro mes',
     'hist.month_prev'       => 'Mes anterior',
     'hist.month_next'       => 'Mes siguiente',
     'hist.month_current'    => 'Ir a este mes',
@@ -128,7 +145,7 @@ return [
     'hist.month_empty'      => 'No hay turnos en el mes seleccionado.',
     'hist.month_label'      => 'Mes',
     'hist.year_label'       => 'Año',
-    'hist.month_show'       => 'Mostrar',
+    'hist.month_show'       => 'Mostrar mes',
 
     // Errores
     'err.404_title'         => 'Página no encontrada',
@@ -141,6 +158,7 @@ return [
 
     // Fechas
     'date.day_heading'      => '{day} {d} de {month}',
+    'date.today_heading'    => 'Hoy: {day} {d} de {month} de {year}',
     'date.range_same'       => '{d1}–{d2} de {month} de {year}',
     'date.range_cross'      => '{d1} de {m1} – {d2} de {m2} de {year}',
     'date.day.0'  => 'Domingo', 'date.day.1' => 'Lunes',   'date.day.2' => 'Martes',

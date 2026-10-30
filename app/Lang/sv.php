@@ -40,8 +40,15 @@ return [
     'dash.report_label'     => 'tidrapport',
     'dash.today_title'      => 'Idag',
     'dash.no_jobs_today'    => 'Inga jobb idag.',
-    'dash.week_schedule'    => 'Veckans schema',
+    'dash.week_schedule'    => 'Visa hela veckans schema',
     'dash.report_btn'       => 'Tidrapport',
+    'remind.friday'         => 'Glöm inte att skicka in veckans tidrapport.',
+    'remind.cta'            => 'Skicka in tidrapporten',
+
+    // Sammanfattning och avvikelse från bokning
+    'summary.aria'          => 'Veckans sammanfattning',
+    'diff.full'             => 'Passets tid är {actual}. Bokad tid: {booked}.',
+    'diff.booked'           => 'Bokad tid: {h}',
 
     // Veckovyn
     'week.title'            => 'Vecka {week}',
@@ -79,7 +86,9 @@ return [
     'job.save'              => 'Spara tider',
     'job.hint_original'     => 'Ursprungligt bokade timmar sparas och visas i tidrapporten.',
     'job.hint_cancelled'    => 'Blev passet avbokat? Sätt samma start- och sluttid så rapporteras 0 timmar.',
+    'job.details'           => 'Visa detaljer',
     'job.back'              => 'Tillbaka till veckan',
+    'job.back_report'       => 'Tillbaka till tidrapporten',
     'job.notfound_title'    => 'Jobbet hittades inte',
     'job.notfound_msg'      => 'Bokningen finns inte eller tillhör inte dig.',
     'job.updated'           => 'Tiderna är uppdaterade.',
@@ -96,10 +105,17 @@ return [
     'report.h_customer'     => 'Kund',
     'report.h_time'         => 'Tid',
     'report.h_hours'        => 'Timmar',
+    'report.adjust'         => 'Justera tid',
+    'report.adjust_short'   => 'Justera',
+    'report.hint'           => 'Granska passen nedan. Du får bekräfta innan rapporten skickas.',
+    'report.review_title'   => 'Pass att granska',
+    'report.submitted_btn'  => 'Rapporten är inskickad',
+    'report.table_caption'  => 'Pass i vecka {week}',
+    'report.action_col'     => 'Åtgärd',
     'report.total_label'    => 'Totalt',
     'report.week_locked'    => 'Veckan är godkänd och låst.',
     'report.confirm_info'   => 'Kontrollera raderna ovan. När du skickar markeras veckans jobb som inskickade och rapporten skickas för godkännande.',
-    'report.submit'         => 'Skicka för godkännande',
+    'report.submit'         => 'Skicka in tidrapport för vecka {week}',
     'report.confirm_again'  => 'Är du säker? Tryck igen för att skicka',
     'report.none'           => 'Inga jobb att rapportera för den här veckan.',
     'report.back'           => 'Tillbaka till schemat',
@@ -114,12 +130,13 @@ return [
     'report.blocked.other'  => '{n} pass behöver rättas innan rapporten kan skickas.',
 
     // Historik
-    'hist.title'            => 'Tidrapporter',
-    'hist.sub'              => 'Senaste 12 veckorna',
-    'hist.none'             => 'Inga jobb de senaste 12 veckorna.',
+    'hist.title'            => 'Historik',
+    'hist.weeks_in'         => 'Veckor i {month}',
+    'hist.week_empty'       => 'Inga pass',
 
     // Historik: månadsöversikt
-    'hist.month_title'      => 'Månadsöversikt',
+    'hist.month_title'      => 'Månadens bokade timmar',
+    'hist.month_pick'       => 'Välj annan månad',
     'hist.month_prev'       => 'Föregående månad',
     'hist.month_next'       => 'Nästa månad',
     'hist.month_current'    => 'Till denna månad',
@@ -128,7 +145,7 @@ return [
     'hist.month_empty'      => 'Inga pass den valda månaden.',
     'hist.month_label'      => 'Månad',
     'hist.year_label'       => 'År',
-    'hist.month_show'       => 'Visa',
+    'hist.month_show'       => 'Visa månad',
 
     // Fel
     'err.404_title'         => 'Sidan finns inte',
@@ -141,6 +158,7 @@ return [
 
     // Datum (mönster + namn; ryska använder genitiv i sina månadsnamn)
     'date.day_heading'      => '{day} {d} {month}',
+    'date.today_heading'    => 'Idag: {day} den {d} {month} {year}',
     'date.range_same'       => '{d1}–{d2} {month} {year}',
     'date.range_cross'      => '{d1} {m1} – {d2} {m2} {year}',
     'date.day.0'  => 'Söndag',  'date.day.1' => 'Måndag',  'date.day.2' => 'Tisdag',
